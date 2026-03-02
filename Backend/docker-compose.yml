@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+    webapi:
+        container_name: stone_auction
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - "5003:8080"
+        networks:
+            - ccsearcher
+        depends_on:
+            - db
+    db:
+        image: postgres:17
+        environment:
+            POSTGRES_DB: stoneauction
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: admin
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        networks:
+            - ccsearcher
+            
+networks:
+    ccsearcher:
+        driver: bridge
+        
+volumes:
+    postgres_data:

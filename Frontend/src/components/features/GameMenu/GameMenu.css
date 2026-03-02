@@ -1,0 +1,200 @@
+﻿.App {
+    text-align: center;
+    min-height: 100vh;
+    background: #282828;
+    padding: 20px;
+}
+
+/* Дополнительные стили для основного контента */
+.main-content {
+    color: white;
+    padding: 40px 20px;
+}
+
+.main-content h1 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.main-content p {
+    font-size: 1.2rem;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* Глобальные сбросы */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #2c3e50;
+    height: 50vh;
+    z-index: 99;
+    display: flex;
+    flex-direction: column;
+    border-top: 3px solid #34495e;
+}
+
+/* Бар с кнопками переключения */
+.panel-tabs {
+    display: flex;
+    background: #34495e;
+    border-bottom: 2px solid #4a6078;
+    padding: 0;
+}
+
+.tab-button {
+    flex: 1;
+    padding: 15px 20px;
+    background: #34495e;
+    color: #bdc3c7;
+    border: none;
+    border-right: 1px solid #4a6078;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+.tab-button:last-child {
+    border-right: none;
+}
+
+.tab-button:hover {
+    background: #3d566e;
+    color: #ecf0f1;
+}
+
+.tab-button.active {
+    background: #2c3e50;
+    color: #ecf0f1;
+    border-bottom: 3px solid #ecf0f1;
+}
+
+/* Контент панели */
+.panel-content {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.panel-header {
+    margin-bottom: 20px;
+}
+
+.panel-header h2 {
+    margin: 0;
+    color: #ecf0f1;
+    font-size: 24px;
+    border-bottom: 2px solid #34495e;
+    padding-bottom: 10px;
+    font-weight: 600;
+}
+
+.panel-content ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.panel-content li {
+    padding: 12px 16px;
+    border-bottom: 1px solid #34495e;
+    font-size: 16px;
+    color: #bdc3c7;
+    background-color: #34495e;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+}
+
+.panel-content li:hover {
+    background-color: #3d566e;
+    color: #ecf0f1;
+    transform: translateX(5px);
+}
+
+.panel-content li:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+/* Стили для скроллбара */
+.panel-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.panel-content::-webkit-scrollbar-track {
+    background: #34495e;
+    border-radius: 4px;
+}
+
+.panel-content::-webkit-scrollbar-thumb {
+    background: #4a6078;
+    border-radius: 4px;
+}
+
+.panel-content::-webkit-scrollbar-thumb:hover {
+    background: #5a7088;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+    .panel {
+        height: 60vh;
+    }
+
+    .tab-button {
+        padding: 12px 10px;
+        font-size: 14px;
+        letter-spacing: 0.5px;
+    }
+
+    .panel-content {
+        padding: 15px;
+    }
+
+    .panel-header h2 {
+        font-size: 20px;
+    }
+
+    .panel-content li {
+        padding: 10px 12px;
+        font-size: 14px;
+    }
+}
+
+/* Анимация появления */
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+.panel {
+    animation: slideUp 0.3s ease-out;
+}
+
