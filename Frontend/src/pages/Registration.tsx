@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { useState } from 'react';
+import type { FormEvent } from 'react';
 import { api } from '@/lib/api';
-import Link from 'next/link';
+import { Link } from 'react-router-dom';
 
 export default function RegistrationPage() {
     const [userName, setUserName] = useState('');
@@ -69,7 +70,7 @@ export default function RegistrationPage() {
                 </button>
                 {error && <p style={{ color: 'red' }}>{error}</p>}
                 <div style={{ textAlign: 'center', marginTop: '10px' }}>
-                    <Link href="/login" style={{ color: 'white', textDecoration: 'underline' }}>
+                    <Link to="/login" style={{ color: 'white', textDecoration: 'underline' }}>
                         Back to Login
                     </Link>
                 </div>

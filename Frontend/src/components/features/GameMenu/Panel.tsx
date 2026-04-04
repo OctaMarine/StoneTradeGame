@@ -1,5 +1,5 @@
 ﻿import React, {useEffect, useState} from 'react';
-import { api } from '@/lib/api'; // Import the new api object
+import { api } from '@/lib/api';
 import './GameMenu.css';
 import './ItemGrid.css';
 import { getItemMetadata } from '@/lib/itemsMetadata';
@@ -20,11 +20,21 @@ interface TradeItemDTO {
     seller: string;
 }
 
-const Panel: React.FC = () => {
+// Интерфейс для пропсов компонента Panel
+interface PanelProps {
+    onTradeAction: () => void;
+}
+
+const Panel: React.FC<PanelProps> = ({ onTradeAction }) => {
     // Состояние для активной панели
     const [activePanel, setActivePanel] = useState<PanelType>('inventory');
     const [inventoryItems, setInventoryItems] = useState<InventoryItemDTO[]>([]);
     const [tradeItems, setTradeItems] = useState<TradeItemDTO[]>([]);
+
+    // State for Sell Modal
+    const [isSellModalOpen, setIsSellModalOpen] = useState(false);
+    const [selectedItem, setSelectedItem] = useState<InventoryItemDTO | null>(null);
+    const [sellPrice, setSellPrice] = useState<number>(0);
 
     // Обработчик клика по кнопкам
     const handleMenuClick = (item: PanelType) => {
@@ -49,12 +59,39 @@ const Panel: React.FC = () => {
         }
     };
 
-    const handleBuy = (itemId : string) => {
+    const handleBuy = async (itemId : string) => {
         console.log('Покупка товара с ID:', itemId);
         try {
-            api.trade.buyTrade(itemId);
+            await api.trade.buyTrade(itemId);
+            onTradeAction(); // Call to refresh user data (coins) and trade items
+            fetchTrade();
         } catch (err) {
             console.error('Failed to fetch trade:', err);
+        }
+    };
+
+    const handleSellClick = (item: InventoryItemDTO) => {
+        setSelectedItem(item);
+        setSellPrice(0);
+        setIsSellModalOpen(true);
+    };
+
+    const handleSellCancel = () => {
+        setIsSellModalOpen(false);
+        setSelectedItem(null);
+    };
+
+    const handleSellSubmit = async () => {
+        if (!selectedItem || sellPrice <= 0) return;
+
+        try {
+            await api.trade.setTrade(selectedItem.id, sellPrice);
+            setIsSellModalOpen(false);
+            setSelectedItem(null);
+            fetchInventory(); // Refresh inventory after selling
+            onTradeAction(); // Call to refresh user data (coins)
+        } catch (err) {
+            console.error('Failed to set trade:', err);
         }
     };
 
@@ -108,6 +145,7 @@ const Panel: React.FC = () => {
                                     />
                                     <span className="item-name">{metadata.name}</span>
                                     <span className="item-quantity">x{item.quantity}</span>
+                                    <button className="sell-button" onClick={() => handleSellClick(item)}>Sell</button>
                                 </div>
                             );
                         })}
@@ -143,6 +181,26 @@ const Panel: React.FC = () => {
                     </ul>
                 )}
             </div>
+
+            {/* Sell Modal */}
+            {isSellModalOpen && selectedItem && (
+                <div className="modal-overlay">
+                    <div className="modal-content">
+                        <h3>Sell {getItemMetadata(selectedItem.id).name}</h3>
+                        <p>Enter price (gold):</p>
+                        <input 
+                            type="number" 
+                            value={sellPrice} 
+                            onChange={(e) => setSellPrice(parseInt(e.target.value) || 0)}
+                            min="1"
+                        />
+                        <div className="modal-actions">
+                            <button className="modal-button cancel" onClick={handleSellCancel}>Cancel</button>
+                            <button className="modal-button confirm" onClick={handleSellSubmit}>List</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

@@ -1,15 +1,16 @@
-'use client';
-
-import { useState, FormEvent } from 'react';
+import { useState} from 'react';
+import type { FormEvent } from 'react';
 import { api } from '@/lib/api';
-import Link from "next/link";
+import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export default function LoginPage() {
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-
+  const navigate = useNavigate();
+  
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     setError(null);
@@ -17,7 +18,7 @@ export default function LoginPage() {
 
     try {
       await api.auth.login(userName, password);
-      window.location.href = '/game';
+      navigate('/game');
     } catch (error) {
       console.error('An error occurred during login:', error);
       setError(error instanceof Error ? error.message : 'An unknown error occurred.');
@@ -70,7 +71,7 @@ export default function LoginPage() {
         
         {/* Ссылка на регистрацию */}
         <div className="text-center">
-          <Link href="/registration" className="text-blue-400 hover:underline">
+          <Link to="/registration" className="text-blue-400 hover:underline">
             Register
           </Link>
         </div>

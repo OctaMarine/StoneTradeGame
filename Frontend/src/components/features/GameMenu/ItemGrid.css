@@ -71,3 +71,89 @@
 .buy-button:hover {
     background-color: #8e44ad;
 }
+
+.sell-button {
+    background-color: #6044ab;
+    color: #ffffff;
+    border: 1px solid #8e44ad;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+    margin-right: 10px;
+}
+
+.sell-button:hover {
+    background-color: #8e44ad;
+}
+
+/* Modal styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: #2c3e50;
+    padding: 20px;
+    border-radius: 8px;
+    border: 2px solid #34495e;
+    min-width: 300px;
+    color: white;
+}
+
+.modal-content h3 {
+    margin-top: 0;
+}
+
+.modal-content input {
+    width: 100%;
+    padding: 8px;
+    margin: 10px 0;
+    background: #34495e;
+    border: 1px solid #4a6078;
+    color: white;
+    border-radius: 4px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.modal-button {
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    border: none;
+}
+
+.modal-button.confirm {
+    background: #27ae60;
+    color: white;
+}
+
+.modal-button.confirm:hover {
+    background: #2ecc71;
+}
+
+.modal-button.cancel {
+    background: #c0392b;
+    color: white;
+}
+
+.modal-button.cancel:hover {
+    background: #e74c3c;
+}

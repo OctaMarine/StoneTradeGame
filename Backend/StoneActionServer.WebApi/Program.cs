@@ -8,10 +8,10 @@ using StoneActionServer.DAL;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowNextJS",
+    options.AddPolicy("AllowReact",
         policy =>
         {
-            policy.WithOrigins("http://localhost:3333","http://192.168.0.142:3333") // Next.js dev server
+            policy.WithOrigins("http://localhost:3333","http://192.168.0.142:3333") 
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials();
@@ -37,7 +37,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     {
         OnMessageReceived = context =>
         {
-            // Имя cookie должно быть согласовано с тем, что вы установите в методе Login
+            // Имя cookie должно быть согласовано с тем, что установлено в методе Login
             context.Token = context.Request.Cookies["accessToken"];
             return Task.CompletedTask;
         }
@@ -45,7 +45,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 });
 builder.Services.AddAuthorization();
 var app = builder.Build();
-app.UseCors("AllowNextJS");
+app.UseCors("AllowReact");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
