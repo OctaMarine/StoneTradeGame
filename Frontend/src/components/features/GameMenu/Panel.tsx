@@ -1,5 +1,5 @@
 ﻿import React, {useEffect, useState} from 'react';
-import { api } from '@/lib/api';
+import { api, type CraftingIngredient,type CraftingRecipe } from '@/lib/api';
 import './GameMenu.css';
 import './ItemGrid.css';
 import { getItemMetadata } from '@/lib/itemsMetadata';
@@ -9,15 +9,15 @@ type PanelType = 'inventory' | 'trade' | 'craft';
 
 // Интерфейс для элемента инвентаря с сервера
 interface InventoryItemDTO {
-    id: string;
+    id: number;
     quantity: number;
 }
 
 interface TradeItemDTO {
-    id: string;
-    itemId: string;
+    id: number;
+    itemId: number;
     price: number;
-    seller: string;
+    seller: number;
 }
 
 // Интерфейс для пропсов компонента Panel
@@ -30,6 +30,7 @@ const Panel: React.FC<PanelProps> = ({ onTradeAction }) => {
     const [activePanel, setActivePanel] = useState<PanelType>('inventory');
     const [inventoryItems, setInventoryItems] = useState<InventoryItemDTO[]>([]);
     const [tradeItems, setTradeItems] = useState<TradeItemDTO[]>([]);
+    const [craftableRecipes, setCraftableRecipes] = useState<CraftingRecipe[]>([]);
 
     // State for Sell Modal
     const [isSellModalOpen, setIsSellModalOpen] = useState(false);
@@ -53,13 +54,23 @@ const Panel: React.FC<PanelProps> = ({ onTradeAction }) => {
     const fetchTrade = async () => {
         try {
             const data: TradeItemDTO[] = await api.inventory.getTradeItems();
-            setTradeItems(data);
+            setTradeItems(data || []);
         } catch (err) {
             console.error('Failed to fetch trade:', err);
         }
     };
 
-    const handleBuy = async (itemId : string) => {
+    const fetchCraftableRecipes = async () => {
+        try {
+            const data: CraftingRecipe[] = await api.craft.getAvailableRecipes();
+            setCraftableRecipes(data);
+        } catch (err) {
+            setCraftableRecipes([]);
+            console.error('Failed to fetch craftable recipes:', err);
+        }
+    };
+
+    const handleBuy = async (itemId : number) => {
         console.log('Покупка товара с ID:', itemId);
         try {
             await api.trade.buyTrade(itemId);
@@ -95,16 +106,26 @@ const Panel: React.FC<PanelProps> = ({ onTradeAction }) => {
         }
     };
 
+    const handleCraft = async (recipeId: number) => {
+        console.log('Crafting item with recipe ID:', recipeId);
+        try {
+            await api.craft.craftItem(recipeId);
+            fetchInventory(); // Refresh inventory after crafting
+            onTradeAction(); // Refresh user data (coins/resources)
+        } catch (err) {
+            console.error('Failed to craft item:', err);
+        }
+    };
+
     useEffect(() => {
         if (activePanel === 'inventory') {
             fetchInventory();
         } else if (activePanel === 'trade') {
             fetchTrade();
+        } else if (activePanel === 'craft') {
+            fetchCraftableRecipes();
         }
     }, [activePanel]);
-
-    // Временные данные для крафта
-    const craftItems = ['Sword: Wood x5 + Iron x2', 'Shield: Wood x3 + Iron x1', 'Axe: Wood x2 + Stone x3'];
 
     return (
         <div className="panel">
@@ -174,11 +195,41 @@ const Panel: React.FC<PanelProps> = ({ onTradeAction }) => {
                 )}
 
                 {activePanel === 'craft' && (
-                    <ul>
-                        {craftItems.map((item, index) => (
-                            <li key={index}>{item}</li>
-                        ))}
-                    </ul>
+                    <div className="craft-list">
+                        {craftableRecipes.map((recipe) => {
+                            const craftedItemMetadata = getItemMetadata(recipe.resultItemId);
+                            return (
+                                <div key={recipe.id} className="inventory-row craft-row">
+                                    <img
+                                        src={craftedItemMetadata.icon}
+                                        alt={craftedItemMetadata.name}
+                                        className="item-icon"
+                                    />
+                                    <span className="item-name">{craftedItemMetadata.name} x{recipe.resultQuantity}</span>
+                                    <span className="craft-chance">Chance: {(recipe.chanceOfSuccess * 100).toFixed(0)}%</span>
+                                    
+                                        <span className="craft-time">Time: {recipe.craftingTimeSeconds}s</span>
+                                    
+                                    <div className="craft-resources">
+                                        {recipe.requiredItems?.map((resource) => {
+                                            const resourceMetadata = getItemMetadata(resource.itemId);
+                                            return (
+                                                <div key={resource.id} className="craft-resource-item">
+                                                    <img
+                                                        src={resourceMetadata.icon}
+                                                        alt={resourceMetadata.name}
+                                                        className="resource-icon"
+                                                    />
+                                                    <span className="resource-quantity">x{resource.quantity}</span>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                    <button className="craft-button" onClick={() => handleCraft(recipe.id)}>Craft</button>
+                                </div>
+                            );
+                        })}
+                    </div>
                 )}
             </div>
 

@@ -1,6 +1,6 @@
-const url_host_dev: string = 'http://localhost:5000/api/v1/';
-//const url_host_prod: string = 'http://192.168.0.142:5000/api/v1/';
-const url_host: string = url_host_dev;
+//const url_host_dev: string = 'http://localhost:5000/api/v1/';
+const url_host_prod: string = 'http://192.168.0.142:5000/api/v1/';
+const url_host: string = url_host_prod;
 
 export const api = {
   
@@ -85,7 +85,7 @@ export const api = {
         }
     },
     trade : {
-        buyTrade: (tradeId: string) => {
+        buyTrade: (tradeId: number) => {
             return fetch(url_host+'buytrade', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -98,11 +98,11 @@ export const api = {
                 return response.ok; // Возвращаем просто статус успешности
             }) 
         },
-        setTrade: (itemId: string, price: number) => {
+        setTrade: (itemId: number, price: number) => {
             const formData = new FormData();
-            formData.append('itemId', itemId);
+            formData.append('itemId', itemId.toString());
             formData.append('price', price.toString());
-
+    
             return fetch(url_host + 'settrade', {
                 method: 'POST',
                 body: formData,
@@ -116,5 +116,48 @@ export const api = {
                 return response.ok;
             });
         }
+    },
+    craft: {
+        getAvailableRecipes: (): Promise<CraftingRecipe[]> => {
+            return fetch(url_host + 'recipes', {
+                credentials: 'include',
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok for /craft/recipes. Status: ' + response.status);
+                }
+                return response.json();
+            });
+        },
+        craftItem: (recipeId: number) => {
+            return fetch(url_host + 'craft', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ RecipeId: recipeId }),
+                credentials: 'include',
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok for /craft. Status: ' + response.status);
+                }
+                return response.ok;
+            });
+        }
     }
 };
+
+export interface CraftingIngredient {
+  id: number;
+  itemId: number;
+  quantity: number;
+}
+
+export interface CraftingRecipe {
+  id: number;
+  resultItemId: number;
+  resultQuantity: number;
+  chanceOfSuccess: number;
+  requiredItems: CraftingIngredient[];
+  craftingTimeSeconds: number;
+  craftingType: number;
+}

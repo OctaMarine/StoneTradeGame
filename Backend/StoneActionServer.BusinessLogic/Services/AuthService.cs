@@ -29,15 +29,13 @@ public class AuthService : IAuthService
         
         var inventory = new Inventory
         {
-            Coins = 10,
-            Id = Guid.NewGuid()
+            Coins = 10
         };
 
         var user = new User
         {
             UserName = userName,
             Email = email,
-            Id = Guid.NewGuid(),
             Inventory = inventory
         };
         var pasHash = new PasswordHasher<User>().HashPassword(user, password);

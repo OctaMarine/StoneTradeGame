@@ -18,7 +18,7 @@ public class TradeController : ControllerBase
     
     [Authorize]
     [HttpPost("settrade")]
-    public async Task<IActionResult> SetTrade([FromForm] string itemId, [FromForm] int price)
+    public async Task<IActionResult> SetTrade([FromForm] int itemId, [FromForm] int price)
     {
         var claim = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "id");
         if (claim == null)
@@ -26,14 +26,18 @@ public class TradeController : ControllerBase
             return BadRequest("Claim not found");
         }
         var userId = claim.Value;
-        
-        var (success,id) = await _tradeRepository.Set(userId, itemId, price);
-        return Ok(id);
+        if (int.TryParse(userId, out int resId))
+        {
+            var (success,id) = await _tradeRepository.Set(resId, itemId, price);
+            return Ok(id);   
+        }
+
+        return BadRequest("Id not identified");
     }
     
     [Authorize]
     [HttpPost("buytrade")]
-    public async Task<IActionResult> BuyTrade([FromBody] TradeItemData trade)
+    public async Task<IActionResult> BuyTrade([FromBody] TradeItemRequestDTO trade)
     {
         var claim = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "id");
         if (claim == null)
@@ -42,7 +46,7 @@ public class TradeController : ControllerBase
         }
         var userId = claim.Value;
         
-        await _tradeRepository.Complete(userId, trade.TradeId);
+        await _tradeRepository.Complete(Convert.ToInt32(userId), trade.TradeId);
         return Ok();
     }
     

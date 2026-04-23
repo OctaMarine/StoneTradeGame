@@ -31,7 +31,7 @@ public class InventoryController : ControllerBase
 
         var userId = claim.Value;
 
-        var dto = _inventoryService.GetUserData(userId);
+        var dto = _inventoryService.GetUserData(Convert.ToInt32(userId));
         return Ok(dto);
     }
     
@@ -56,7 +56,7 @@ public class InventoryController : ControllerBase
 
         var userId = claim.Value;
         
-        var coins = _inventoryService.GetCoins(userId);
+        var coins = _inventoryService.GetCoins(Convert.ToInt32(userId));
         return Ok(coins);
     }
     
@@ -71,7 +71,7 @@ public class InventoryController : ControllerBase
         }
         var userId = claim.Value;
         
-        await _inventoryService.GainCoins(userId,coins);
+        await _inventoryService.GainCoins(Convert.ToInt32(userId),coins);
         return Ok();
     }
     
@@ -86,13 +86,13 @@ public class InventoryController : ControllerBase
         }
         var userId = claim.Value;
         
-        await _inventoryService.SpendCoins(userId, coins);
+        await _inventoryService.SpendCoins(Convert.ToInt32(userId), coins);
         return Ok();
     }
     
     [Authorize]
     [HttpPost("buyitem")]
-    public async Task<IActionResult> BuyItem([FromForm] string itemId)
+    public async Task<IActionResult> BuyItem([FromForm] int itemId)
     {
         var claim = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "id");
         if (claim == null)
@@ -101,13 +101,13 @@ public class InventoryController : ControllerBase
         }
         var userId = claim.Value;
         
-        await _inventoryService.BuyItem(userId, itemId);
+        await _inventoryService.BuyItem(Convert.ToInt32(userId), itemId);
         return Ok();
     }
     
     [Authorize]
     [HttpPost("sellitem")]
-    public async Task<IActionResult> SellItem([FromForm] string itemId)
+    public async Task<IActionResult> SellItem([FromForm] int itemId)
     {
         var claim = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "id");
         if (claim == null)
@@ -116,7 +116,7 @@ public class InventoryController : ControllerBase
         }
         var userId = claim.Value;
         
-        await _inventoryService.SellItem(userId, itemId);
+        await _inventoryService.SellItem(Convert.ToInt32(userId), itemId);
         return Ok();
     }
     
@@ -132,7 +132,7 @@ public class InventoryController : ControllerBase
 
         var userId = claim.Value;
 
-        var dto = _inventoryService.GetUserInventoryItems(userId).ToList();
+        var dto = _inventoryService.GetUserInventoryItems(Convert.ToInt32(userId)).ToList();
         return Ok(dto);
     }
 }

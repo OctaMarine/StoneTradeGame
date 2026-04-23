@@ -14,14 +14,13 @@ public class TradeRepository : ITradeRepository
         _context = context;
     }
 
-    public async Task<(bool, string)> Set(string userId, string itemId, int price)
+    public async Task<(bool, int)> Set(int userId, int itemId, int price)
     {
-        var item = _context.Items.FirstOrDefault(i => i.Id.ToString() == itemId);
-        var user = _context.Users.FirstOrDefault(i => i.Id.ToString() == userId);
+        var item = _context.Items.FirstOrDefault(i => i.Id == itemId);
+        var user = _context.Users.FirstOrDefault(i => i.Id == userId);
 
         var tradeSlot = new TradeSlot
         {
-            Id = Guid.NewGuid(),
             Price = price,
             Item = item,
             User = user
@@ -29,33 +28,33 @@ public class TradeRepository : ITradeRepository
         
         var inventory = _context.Inventories
             .Include(i => i.Slots)
-            .FirstOrDefault(i => i.UserId.ToString() == userId);
+            .FirstOrDefault(i => i.UserId == userId);
         
-        var slot = inventory.Slots.FirstOrDefault(s => s.ItemId.ToString() == itemId);
+        var slot = inventory.Slots.FirstOrDefault(s => s.ItemId == itemId);
         if (slot == null)
         {
-            return (false,String.Empty);
+            return (false,-1);
         }
         _context.Slots.Remove(slot);
 
         await _context.TradeSlots.AddAsync(tradeSlot);
         await _context.SaveChangesAsync();
-        return (true,tradeSlot.Id.ToString());
+        return (true,tradeSlot.Id);
     }
 
-    public async Task<bool> Remove(string userId, string tradeId)
+    public async Task<bool> Remove(int userId, int tradeId)
     {
         return true;
     }
 
-    public async Task<bool> Complete(string userId, string tradeId)
+    public async Task<bool> Complete(int userId, int tradeId)
     {
         var user = _context.Users
             .Include(x => x.Inventory)
-            .FirstOrDefault(i => i.Id.ToString() == userId);
+            .FirstOrDefault(i => i.Id == userId);
         var trade = _context.TradeSlots
             .Include(x=> x.Item)
-            .FirstOrDefault(i => i.Id.ToString() == tradeId);
+            .FirstOrDefault(i => i.Id == tradeId);
 
         if (user.Inventory.Coins >= trade.Price)
         {
@@ -64,7 +63,6 @@ public class TradeRepository : ITradeRepository
 
             var slot = new SlotInventory
             {
-                Id = Guid.NewGuid(),
                 Quantity = 1,
                 Inventory = user.Inventory,
                 Item = trade.Item
@@ -84,8 +82,8 @@ public class TradeRepository : ITradeRepository
             .Include(s => s.Item)
             .Select(s => new TradeItemDTO
             {
-                Id = s.Id.ToString(),
-                ItemId = s.Item.Id.ToString(),
+                Id = s.Id,
+                ItemId = s.Item.Id,
                 Price = s.Price,
                 Seller = s.User.UserName
             });

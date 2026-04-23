@@ -88,6 +88,81 @@
     background-color: #8e44ad;
 }
 
+/* --- НОВЫЕ СТИЛИ ДЛЯ ПАНЕЛИ КРАФТА --- */
+
+.craft-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px;
+}
+
+.craft-row {
+    justify-content: space-between;
+    min-height: 60px;
+}
+
+
+.craft-row .item-name {
+    flex: 0 1 auto;
+    text-align: left;
+    min-width: 120px;
+}
+
+.craft-chance, .craft-time {
+    font-size: 12px;
+    color: #bdc3c7;
+    margin: 0 5px;
+    white-space: nowrap;
+}
+
+.craft-resources {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 4px 8px;
+    border-radius: 4px;
+    align-items: center;
+    margin: 0 10px;
+    flex: 1;
+    justify-content: center;
+}
+
+.craft-resource-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.resource-icon {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+}
+
+.resource-quantity {
+    font-size: 12px;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.craft-button {
+    background-color: #27ae60;
+    color: #ffffff;
+    border: 1px solid #2ecc71;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.2s ease;
+    white-space: nowrap;
+}
+
+.craft-button:hover {
+    background-color: #2ecc71;
+}
+
 /* Modal styles */
 .modal-overlay {
     position: fixed;

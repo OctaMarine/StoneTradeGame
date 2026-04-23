@@ -16,10 +16,12 @@ public static class Extensions
 
             //options.LogTo(Console.WriteLine);
             options.UseNpgsql(connectionConf);
+            options.UseSnakeCaseNamingConvention();
         });
         serviceCollection.AddScoped<IAuthRepository,AuthRepository>();
         serviceCollection.AddScoped<IInventoryRepository,InventoryRepository>();
         serviceCollection.AddScoped<ITradeRepository,TradeRepository>();
+        serviceCollection.AddScoped<ICraftingRepository,CraftingRepository>();
         return serviceCollection;
     }
 }

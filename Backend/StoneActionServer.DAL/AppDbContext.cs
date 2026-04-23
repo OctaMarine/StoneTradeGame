@@ -12,11 +12,13 @@ public sealed class AppDbContext : DbContext
     public DbSet<Item> Items { get; set; }
     public DbSet<SlotInventory> Slots { get; set; }
     public DbSet<TradeSlot> TradeSlots { get; set; }
+    public DbSet<CraftingRecipe> CraftingRecipe { get; set; }
+    public DbSet<CraftingIngredient> CraftingIngredient { get; set; }
     
     public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)
     {
-        Database.EnsureCreated();
+
     }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -26,14 +28,8 @@ public sealed class AppDbContext : DbContext
         modelBuilder.ApplyConfiguration(new ItemConfiguration());
         modelBuilder.ApplyConfiguration(new SlotInventoryConfiguration());
         modelBuilder.ApplyConfiguration(new TradeSlotConfiguration());
-
-        
-        modelBuilder.Entity<User>().HasData(
-            new User { Id = Guid.NewGuid(), Email = "email@", PasswordHash = "dsf3sdf", UserName = "Oc"}
-        );
-        modelBuilder.Entity<Item>().HasData(
-            new Item { Id = Guid.NewGuid(), Name = "Iron"}
-        );
+        modelBuilder.ApplyConfiguration(new CraftingRecipeConfiguration());
+        modelBuilder.ApplyConfiguration(new CraftingIngredientConfiguration());
         base.OnModelCreating(modelBuilder);
     }
 }

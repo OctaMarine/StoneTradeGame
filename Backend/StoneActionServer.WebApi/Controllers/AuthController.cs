@@ -27,7 +27,7 @@ public class AuthController : ControllerBase
     }
     
     [HttpPost("login")]
-    public async Task<IActionResult> Login([FromBody] LoginRequestData request)
+    public async Task<IActionResult> Login([FromBody] LoginRequestDTO request)
     {
         Console.WriteLine("Login ...");
         var token = await _authService.Login(request.UserName, request.Password);
@@ -41,7 +41,9 @@ public class AuthController : ControllerBase
         {
                      HttpOnly = true, // Самое главное: cookie недоступна через JavaScript
                      //Secure = true,   // Отправлять cookie только по HTTPS
-                     SameSite = SameSiteMode.Lax, // Защита от CSRF
+                     Secure = false,              // ← HTTP в разработке
+                     SameSite = SameSiteMode.Lax,
+                     //SameSite = SameSiteMode.Lax, // Защита от CSRF
                      // Expires = DateTime.UtcNow.AddDays(7) // Установите время жизни cookie
         };
         Console.WriteLine(token);

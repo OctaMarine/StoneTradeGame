@@ -15,7 +15,8 @@ export default defineConfig({
   ],
   server: {
     port: 3333,
-    host: true, // Позволяет подключаться по IP и делает сервер более "видимым"
+    host: '0.0.0.0',
+     allowedHosts: true, // Позволяет подключаться по IP и делает сервер более "видимым"
   },
   resolve: {
     alias: {

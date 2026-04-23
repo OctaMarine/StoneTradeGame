@@ -14,6 +14,7 @@ public static class Extensions
         serviceCollection.AddScoped<IAuthService,AuthService>();
         serviceCollection.AddScoped<IInventoryService,InventoryService>();
         serviceCollection.AddScoped<ITradeService,TradeService>();
+        serviceCollection.AddScoped<ICraftingService,CraftingService>();
         return serviceCollection;
     }
 }
