@@ -1,6 +1,6 @@
-//const url_host_dev: string = 'http://localhost:5000/api/v1/';
-const url_host_prod: string = 'http://192.168.0.142:5000/api/v1/';
-const url_host: string = url_host_prod;
+const url_host_dev: string = 'http://localhost:5000/api/v1/';
+//const url_host_prod: string = 'http://192.168.0.142:5000/api/v1/';
+const url_host: string = url_host_dev;
 
 export const api = {
   
@@ -129,11 +129,11 @@ export const api = {
                 return response.json();
             });
         },
-        craftItem: (recipeId: number) => {
+        craftItem: (craftingRecipeId: number) => {
             return fetch(url_host + 'craft', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ RecipeId: recipeId }),
+                body: JSON.stringify({ CraftingRecipeId: craftingRecipeId }),
                 credentials: 'include',
             })
             .then(response => {

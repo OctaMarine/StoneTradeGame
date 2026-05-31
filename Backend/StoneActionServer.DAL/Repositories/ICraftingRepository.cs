@@ -6,9 +6,9 @@ namespace StoneActionServer.DAL.Repositories
 {
     public interface ICraftingRepository
     {
-        public Task<bool> CanCraftItemAsync(int userId, int itemId, int quantity);
-        public Task ConsumeMaterialsAsync(int userId, int itemId, int quantity);
-        public Task AddCraftedItemAsync(int userId, int itemId, int quantity);
+        public Task<bool> CanCraftRecipe(int userId, int craftingRecipeId);
+        public Task<bool> ConsumeMaterials(int userId, int craftingRecipeId);
+        public Task<bool> AddCraftedItem(int userId, int craftingRecipeId);
         public Task<List<CraftingRecipeDTO>> GetRecipes();
 
         

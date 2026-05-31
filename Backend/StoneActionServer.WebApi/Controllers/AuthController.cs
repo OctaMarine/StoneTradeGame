@@ -6,11 +6,11 @@ namespace StoneActionServer.WebApi.Controllers;
 
 [ApiController]
 [Route("api/v1")]
-public class AuthController : ControllerBase
+public class AuthController : BaseApiController
 {
     private readonly IAuthService _authService;
     
-    public AuthController(IAuthService authService)
+    public AuthController(IAuthService authService,ICurrentUserService currentUserService) : base(currentUserService)
     {
         _authService = authService;
     }

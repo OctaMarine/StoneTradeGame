@@ -19,37 +19,84 @@ namespace StoneActionServer.DAL.Repositories
             _context = context;
         }
 
-        public async Task<bool> CanCraftItemAsync(int userId, int itemId, int quantity)
+        public async Task<bool> CanCraftRecipe(int userId, int craftingRecipeId)
         {
-            // --- Placeholder Logic ---
-            // In a real implementation, this would:
-            // 1. Fetch the item recipe for itemId.
-            // 2. Query the user's inventory for the required materials.
-            // 3. Check if quantities are sufficient.
-            // For now, we'll simulate success if userId is not 0.
-            return await Task.FromResult(userId != 0);
-            // --- End Placeholder Logic ---
+            var slots = _context.Inventories
+                .Include(r => r.Slots)
+                .Where(x => x.UserId == userId)
+                .Select(r => r.Slots)
+                .FirstOrDefault()?.ToList();
+            
+            var requiredItems = _context.CraftingRecipe
+                .Include(r => r.RequiredItems)
+                .Where(r => r.Id == craftingRecipeId)
+                .Select(r => r.RequiredItems).FirstOrDefault()?.ToList();
+            if (slots == null || requiredItems == null)
+            {
+                throw new Exception("Слоты не найдены");
+            }
+            
+            var isCan = requiredItems.All(req => 
+                slots.Any(s => s.ItemId == req.ItemId && s.Quantity >= req.Quantity));
+
+            return isCan;
+
         }
 
-        public async Task ConsumeMaterialsAsync(int userId, int itemId, int quantity)
+        public async Task<bool> ConsumeMaterials(int userId, int craftingRecipeId)
         {
-            // --- Placeholder Logic ---
-            // In a real implementation, this would:
-            // 1. Fetch the item recipe.
-            // 2. Decrement the quantities of required materials from the user's inventory in the database.
-            // 3. Handle transactions and potential errors.
-            await Task.Delay(10); // Simulate async work
-            // --- End Placeholder Logic ---
+            var inventory = _context.Inventories
+                .Include(i => i.Slots)
+                .FirstOrDefault(i => i.UserId == userId);
+            
+            var recipe = await _context.CraftingRecipe
+                .Include(r => r.RequiredItems)
+                .FirstOrDefaultAsync(r => r.Id == craftingRecipeId);
+        
+            foreach (var req in recipe.RequiredItems)
+            {
+                var slot = inventory.Slots.FirstOrDefault(s => s.ItemId == req.ItemId);
+        
+                if (slot == null || slot.Quantity < req.Quantity)
+                {
+                    return false; 
+                }
+
+                slot.Quantity -= req.Quantity;
+                
+                if (slot.Quantity <= 0)
+                {
+                    _context.Slots.Remove(slot); 
+                }
+            }
+
+            await _context.SaveChangesAsync();
+            return true;
         }
 
-        public async Task AddCraftedItemAsync(int userId, int itemId, int quantity)
+        public async Task<bool> AddCraftedItem(int userId, int craftingRecipeId)
         {
-            // --- Placeholder Logic ---
-            // In a real implementation, this would:
-            // 1. Increment the quantity of the crafted item in the user's inventory in the database.
-            // 2. Handle transactions and potential errors.
-            await Task.Delay(10); // Simulate async work
-            // --- End Placeholder Logic ---
+            var itemId = _context.CraftingRecipe
+                .Where(r => r.Id == craftingRecipeId)
+                .Select(r => r.ResultItemId).FirstOrDefault();
+            
+            var inventory = _context.Inventories
+                .FirstOrDefault(i => i.UserId == userId);
+
+            if (itemId == 0 || inventory == null)
+            {
+                throw new Exception("Не найден игрок или предмет");
+            }
+            var slot = new SlotInventory
+            {
+                Quantity = 1,
+                Inventory = inventory,
+                ItemId = itemId
+            };
+
+            await _context.Slots.AddAsync(slot);
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         public async Task<List<CraftingRecipeDTO>> GetRecipes()

@@ -7,12 +7,12 @@ namespace StoneActionServer.WebApi.Controllers;
 
 [ApiController]
 [Route("api/v1")]
-public class InventoryController : ControllerBase
+public class InventoryController : BaseApiController
 {
     private readonly IAuthService _authService;
     private readonly IInventoryService _inventoryService;
     
-    public InventoryController(IAuthService authService, IInventoryService inventoryService)
+    public InventoryController(IAuthService authService, IInventoryService inventoryService,ICurrentUserService currentUserService) : base(currentUserService)
     {
         _authService = authService;
         _inventoryService = inventoryService;
@@ -22,16 +22,7 @@ public class InventoryController : ControllerBase
     [HttpGet("userdata")]
     public async Task<IActionResult> GetUserData()
     {
-        Console.WriteLine("Get Userdata");
-        var claim = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "id");
-        if (claim == null)
-        {
-            return BadRequest("Claim not found");
-        }
-
-        var userId = claim.Value;
-
-        var dto = _inventoryService.GetUserData(Convert.ToInt32(userId));
+        var dto = _inventoryService.GetUserData(UserId);
         return Ok(dto);
     }
     
@@ -48,15 +39,8 @@ public class InventoryController : ControllerBase
     [HttpGet("coins")]
     public async Task<IActionResult> GetUserCoins()
     {
-        var claim = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "id");
-        if (claim == null)
-        {
-            return BadRequest("Claim not found");
-        }
-
-        var userId = claim.Value;
         
-        var coins = _inventoryService.GetCoins(Convert.ToInt32(userId));
+        var coins = _inventoryService.GetCoins(UserId);
         return Ok(coins);
     }
     
@@ -64,14 +48,7 @@ public class InventoryController : ControllerBase
     [HttpPost("gaincoins")]
     public async Task<IActionResult> GainUserCoins([FromForm] int coins)
     {
-        var claim = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "id");
-        if (claim == null)
-        {
-            return BadRequest("Claim not found");
-        }
-        var userId = claim.Value;
-        
-        await _inventoryService.GainCoins(Convert.ToInt32(userId),coins);
+        await _inventoryService.GainCoins(UserId,coins);
         return Ok();
     }
     
@@ -79,14 +56,7 @@ public class InventoryController : ControllerBase
     [HttpPost("spendcoins")]
     public async Task<IActionResult> SpendUserCoins([FromForm] int coins)
     {
-        var claim = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "id");
-        if (claim == null)
-        {
-            return BadRequest("Claim not found");
-        }
-        var userId = claim.Value;
-        
-        await _inventoryService.SpendCoins(Convert.ToInt32(userId), coins);
+        await _inventoryService.SpendCoins(UserId, coins);
         return Ok();
     }
     
@@ -94,14 +64,7 @@ public class InventoryController : ControllerBase
     [HttpPost("buyitem")]
     public async Task<IActionResult> BuyItem([FromForm] int itemId)
     {
-        var claim = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "id");
-        if (claim == null)
-        {
-            return BadRequest("Claim not found");
-        }
-        var userId = claim.Value;
-        
-        await _inventoryService.BuyItem(Convert.ToInt32(userId), itemId);
+        await _inventoryService.BuyItem(UserId, itemId);
         return Ok();
     }
     
@@ -109,14 +72,7 @@ public class InventoryController : ControllerBase
     [HttpPost("sellitem")]
     public async Task<IActionResult> SellItem([FromForm] int itemId)
     {
-        var claim = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "id");
-        if (claim == null)
-        {
-            return BadRequest("Claim not found");
-        }
-        var userId = claim.Value;
-        
-        await _inventoryService.SellItem(Convert.ToInt32(userId), itemId);
+        await _inventoryService.SellItem(UserId, itemId);
         return Ok();
     }
     
@@ -124,15 +80,7 @@ public class InventoryController : ControllerBase
     [HttpGet("userinventoryitems")]
     public async Task<IActionResult> GetUserInventoryItems()
     {
-        var claim = HttpContext.User.Claims.FirstOrDefault(x => x.Type == "id");
-        if (claim == null)
-        {
-            return BadRequest("Claim not found");
-        }
-
-        var userId = claim.Value;
-
-        var dto = _inventoryService.GetUserInventoryItems(Convert.ToInt32(userId)).ToList();
+        var dto = _inventoryService.GetUserInventoryItems(UserId).ToList();
         return Ok(dto);
     }
 }
