@@ -1,0 +1,76 @@
+/* GameActions.module.css - Стили для кнопок действий в игре */
+
+/* Контейнер для кнопок действий (например, выход) */
+.action-buttons-container-left-aligned {
+    z-index: 1001;
+    position: absolute;
+    top: 50px;
+    left: 3%;
+}
+
+.action-buttons-container-right-aligned {
+    z-index: 1001;
+    position: absolute;
+    top: 50px;
+    right: 3%;
+}
+
+/* Кнопка действия с иконкой */
+.action-button {
+    border: none;
+    background: #090606;
+    cursor: pointer;
+    zIndex: 1000;
+    borderRadius: 12px;
+    padding: 0;
+    overflow: hidden;
+}
+
+/* Иконка внутри кнопки */
+.action-button-img {
+    borderRadius: 12px;
+    display: block;
+    height: 50px;
+    width: 50px;
+}
+
+/* Эффект наведения для кнопок */
+.action-button:hover {
+    background: #1a1515;
+}
+
+/* Состояние активной кнопки */
+.action-button:active {
+    background: #0a0909;
+}
+
+/* Основной контейнер приложения */
+.app-container {
+    position: relative;
+}
+
+/* Контейнер информации (приветствие и монеты) */
+.game-info-container {
+    text-align: center;
+    padding: 2.5rem 1rem 1rem;
+}
+
+/* Заголовок приветствия */
+.greeting-header {
+    fontFamily: "'Inter', -apple-system, sans-serif";
+    fontWeight: 400;
+    fontSize: '1.5rem';
+    color: #c1fde9;
+    margin: 0 0 0.5rem 0;
+    lineHeight: 1.4;
+    letterSpacing: '-0.01em';
+}
+
+/* Отображение монет */
+.coin-display {
+    fontFamily: "'Inter', monospace";
+    fontWeight: 500;
+    fontSize: '1.25rem';
+    color: #c1fde9;
+    lineHeight: 1.3;
+}

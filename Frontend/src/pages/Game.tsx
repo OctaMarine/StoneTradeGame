@@ -1,6 +1,7 @@
 ﻿import { useState, useEffect, useCallback } from 'react';
 import { api } from '@/lib/api';
 import { Link } from 'react-router-dom';
+import '@/components/features/Game/Game.css';
 import '@/components/features/GameMenu/GameMenu.css';
 import Panel from '@/components/features/GameMenu/Panel';
 
@@ -55,70 +56,50 @@ export default function Game() {
 
     return (
         <div className="App">
-            <div style={{
-                position: 'absolute',
-                top: '50px',
-                left: '25%',
-                transform: 'translateX(-50%)'
-            }}>
-                <img className="App-logo" src="../favicon.ico" height={50} width={50}/>
+            <div className="action-buttons-container-left-aligned">
+                <img 
+                    className="action-button-img" 
+                    src="../favicon.ico" 
+                />
             </div>
 
-            <div style={{
-                textAlign: 'center',
-                padding: '2.5rem 1rem 1rem'
-            }}>
-                <header style={{
-                    fontFamily: "'Inter', -apple-system, sans-serif",
-                    fontWeight: 400,
-                    fontSize: '1.5rem',
-                    color: '#c1fde9',
-                    margin: '0 0 0.5rem 0',
-                    lineHeight: 1.4,
-                    letterSpacing: '-0.01em'
-                }}>
+            <div className="game-info-container">
+                <header className="greeting-header">
                     Hello, {userName || 'Guest'}!
                 </header>
 
-                <div style={{
-                    fontFamily: "'Inter', monospace",
-                    fontWeight: 500,
-                    fontSize: '1.25rem',
-                    color: '#c1fde9',
-                    lineHeight: 1.3
-                }}>
+                <div className="coin-display">
                     Your coins: {coins || '0'}
                 </div>
             </div>
-            <div style={{
-                position: 'absolute',
-                top: '50px',
-                right: '3%'
-            }}>
+            <div className="action-buttons-container-right-aligned">
                 <Link to="/login">
-                    <button
-                        style={{
-                            border: 'none',
-                            background: '#090606',
-                            cursor: 'pointer',
-                            zIndex: 1000,
-                            borderRadius: '12px',
-                            padding: 0,
-                            overflow: 'hidden',
-                        }}
-                    >
+                    <button className="action-button">
                         <img
+                            className="action-button-img"
                             src="file.svg"
                             alt="Выйти"
-                            height={50}
-                            width={50}
-                            style={{
-                                borderRadius: '12px',
-                                display: 'block',
-                            }}
                         />
                     </button>
                 </Link>
+            </div>
+            <div className="action-buttons-container-right-aligned" style={{ marginTop: '70px'}}>
+                <button className="action-button">
+                    <img
+                        src="file.svg"
+                        alt="Настройки"
+                        className="action-button-img"
+                    />
+                </button>
+            </div>
+            <div className="action-buttons-container-right-aligned" style={{ marginTop: '140px'}}>
+                <button className="action-button">
+                    <img
+                        src="file.svg"
+                        alt="Игроки"
+                        className="action-button-img"
+                    />
+                </button>
             </div>
 
             <Panel onTradeAction={fetchUserData} />
