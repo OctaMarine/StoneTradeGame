@@ -11,4 +11,5 @@ public interface IInventoryRepository
     public Task<bool> SpendCoins(int userId, int coins);
     public Task<bool> BuyItem(int userId, int itemId);
     public Task<bool> SellItem(int userId, int itemId);
+    public Task<bool> AddSupply(int userId);
 }

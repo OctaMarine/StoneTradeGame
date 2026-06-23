@@ -46,4 +46,9 @@ public class InventoryService : IInventoryService
     {
         return await _inventoryRepository.SellItem(userId, itemId);
     }
+    
+    public async Task<bool> AddSupply(int userId)
+    {
+        return await _inventoryRepository.AddSupply(userId);
+    }
 }

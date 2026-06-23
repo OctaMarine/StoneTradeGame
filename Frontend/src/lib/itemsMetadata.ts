@@ -7,13 +7,18 @@
 export const ITEMS_METADATA: Record<number, ItemMetadata> = {
     1: {
         id: 1,
-        name: 'Iron',
-        icon: '/icons/iron.png'
+        name: 'Stone',
+        icon: '/icons/stone.png'
     },
     2: {
         id: 2,
-        name: 'Iron Dust',
-        icon: '/icons/iron_dust.png'
+        name: 'Mana Dust',
+        icon: '/icons/mana_dust.png'
+    },
+    3: {
+        id: 3,
+        name: 'Enchanted Stone',
+        icon: '/icons/enchanted_stone.png'
     }
 };
 

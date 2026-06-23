@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback } from 'react';
+﻿import { useState, useEffect, useCallback , useRef} from 'react';
 import { api } from '@/lib/api';
 import { Link } from 'react-router-dom';
 import '@/components/features/Game/Game.css';
@@ -8,6 +8,17 @@ import Panel from '@/components/features/GameMenu/Panel';
 export default function Game() {
     const [coins, setCoins] = useState<number>(0);
     const [userName, setUserName] = useState<string>('');
+
+    const refreshInventoryRef = useRef<(() => void) | null>(null);
+
+    const handleAddSupply = async () => {
+        try {
+            await api.inventory.addSupply();
+            refreshInventoryRef.current?.();
+        } catch (error) {
+            console.error('Ошибка при выполнении поставки:', error);
+        }
+    };
 
     const fetchUserData = useCallback(async () => {
         try {
@@ -58,8 +69,8 @@ export default function Game() {
         <div className="App">
             <div className="action-buttons-container-left-aligned">
                 <img 
-                    className="action-button-img" 
-                    src="../favicon.ico" 
+                    className="player-icons" 
+                    src="icons/player.png" 
                 />
             </div>
 
@@ -75,34 +86,31 @@ export default function Game() {
             <div className="action-buttons-container-right-aligned">
                 <Link to="/login">
                     <button className="action-button">
-                        <img
-                            className="action-button-img"
-                            src="file.svg"
-                            alt="Выйти"
-                        />
+                        Выйти
                     </button>
                 </Link>
             </div>
             <div className="action-buttons-container-right-aligned" style={{ marginTop: '70px'}}>
                 <button className="action-button">
-                    <img
-                        src="file.svg"
-                        alt="Настройки"
-                        className="action-button-img"
-                    />
+                    Настройки
                 </button>
             </div>
             <div className="action-buttons-container-right-aligned" style={{ marginTop: '140px'}}>
                 <button className="action-button">
-                    <img
-                        src="file.svg"
-                        alt="Игроки"
-                        className="action-button-img"
-                    />
+                    Игроки
                 </button>
             </div>
-
-            <Panel onTradeAction={fetchUserData} />
+            <div className="action-buttons-container-right-aligned" style={{ marginTop: '210px'}}>
+                <button 
+                    className="action-button" 
+                    onClick={handleAddSupply}>
+                    Поставка
+                </button>
+            </div>
+            <Panel onRefreshCoin={fetchUserData} 
+                   onRefreshInventory={(refreshFn) => {
+                   refreshInventoryRef.current = refreshFn;
+            }}/>
         </div>
     );
 }

@@ -83,4 +83,12 @@ public class InventoryController : BaseApiController
         var dto = _inventoryService.GetUserInventoryItems(UserId).ToList();
         return Ok(dto);
     }
+    
+    [Authorize]
+    [HttpPost("addsupply")]
+    public async Task<IActionResult> AddSupply()
+    {
+        await _inventoryService.AddSupply(UserId);
+        return Ok();
+    }
 }

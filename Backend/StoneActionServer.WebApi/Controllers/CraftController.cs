@@ -30,10 +30,10 @@ namespace StoneActionServer.WebApi.Controllers
 
             if (!result)
             {
-                return BadRequest("Не удалось произвести Крафт");
+                return Ok(new { result = false });;
             }
 
-            return Ok();
+            return Ok(new { result = true });
         }
         
         [Authorize]

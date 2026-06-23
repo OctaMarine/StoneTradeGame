@@ -110,4 +110,22 @@ public class InventoryRepository : IInventoryRepository
         await _context.SaveChangesAsync();
         return true;
     }
+    
+    public async Task<bool> AddSupply(int userId)
+    {
+        var inventory = _context.Inventories
+            .FirstOrDefault(i => i.UserId == userId);
+        var item = _context.Items.FirstOrDefault(i => i.Id == 1);
+        var slot = new SlotInventory
+        {
+            Quantity = 1,
+            Inventory = inventory,
+            Item = item
+        };
+
+        await _context.Slots.AddAsync(slot);
+        await _context.SaveChangesAsync();
+
+        return true;
+    }
 }

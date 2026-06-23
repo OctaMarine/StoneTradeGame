@@ -82,6 +82,18 @@ export const api = {
                     }
                     return response.json();
                 });
+        },
+        addSupply: () => {
+            return fetch(url_host+'addsupply', {
+                method: 'POST',
+                credentials: 'include',
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok for /supply. Status: ' + response.status);
+                    }
+                    return response.ok;
+                });
         }
     },
     trade : {
@@ -136,11 +148,12 @@ export const api = {
                 body: JSON.stringify({ CraftingRecipeId: craftingRecipeId }),
                 credentials: 'include',
             })
-            .then(response => {
+            .then(async response => {
+                const data = await response.json();
                 if (!response.ok) {
                     throw new Error('Network response was not ok for /craft. Status: ' + response.status);
                 }
-                return response.ok;
+                return data.result;
             });
         }
     }

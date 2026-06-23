@@ -6,6 +6,8 @@
     position: absolute;
     top: 50px;
     left: 3%;
+    width: 100px;
+    height: 100px;
 }
 
 .action-buttons-container-right-aligned {
@@ -17,13 +19,23 @@
 
 /* Кнопка действия с иконкой */
 .action-button {
-    border: none;
-    background: #090606;
+    border: 1px solid #6044ab;
+    background: #211731;
+    border-radius: 6px;
     cursor: pointer;
+    width: 80px;
+    height: 50px;
     zIndex: 1000;
     borderRadius: 12px;
     padding: 0;
     overflow: hidden;
+}
+
+.player-icons {
+    border-radius: 6px;
+    background: #71798a;
+    width: 100px;
+    height: 100px;
 }
 
 /* Иконка внутри кнопки */
@@ -31,7 +43,7 @@
     borderRadius: 12px;
     display: block;
     height: 50px;
-    width: 50px;
+    width: 80px;
 }
 
 /* Эффект наведения для кнопок */

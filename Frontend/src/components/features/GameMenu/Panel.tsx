@@ -22,10 +22,11 @@ interface TradeItemDTO {
 
 // Интерфейс для пропсов компонента Panel
 interface PanelProps {
-    onTradeAction: () => void;
+    onRefreshCoin: () => void;
+    onRefreshInventory: (refreshFn: () => void) => void;
 }
 
-const Panel: React.FC<PanelProps> = ({ onTradeAction }) => {
+const Panel: React.FC<PanelProps> = ({ onRefreshCoin ,onRefreshInventory}) => {
     // Состояние для активной панели
     const [activePanel, setActivePanel] = useState<PanelType>('inventory');
     const [inventoryItems, setInventoryItems] = useState<InventoryItemDTO[]>([]);
@@ -50,6 +51,9 @@ const Panel: React.FC<PanelProps> = ({ onTradeAction }) => {
             console.error('Failed to fetch inventory:', err);
         }
     };
+    useEffect(() => {
+        onRefreshInventory(fetchInventory);
+    }, []); 
 
     const fetchTrade = async () => {
         try {
@@ -74,7 +78,7 @@ const Panel: React.FC<PanelProps> = ({ onTradeAction }) => {
         console.log('Покупка товара с ID:', itemId);
         try {
             await api.trade.buyTrade(itemId);
-            onTradeAction(); // Call to refresh user data (coins) and trade items
+            onRefreshCoin(); // Call to refresh user data (coins) and trade items
             fetchTrade();
         } catch (err) {
             console.error('Failed to fetch trade:', err);
@@ -100,7 +104,7 @@ const Panel: React.FC<PanelProps> = ({ onTradeAction }) => {
             setIsSellModalOpen(false);
             setSelectedItem(null);
             fetchInventory(); // Refresh inventory after selling
-            onTradeAction(); // Call to refresh user data (coins)
+            onRefreshCoin(); // Call to refresh user data (coins)
         } catch (err) {
             console.error('Failed to set trade:', err);
         }
@@ -109,9 +113,17 @@ const Panel: React.FC<PanelProps> = ({ onTradeAction }) => {
     const handleCraft = async (recipeId: number) => {
         console.log('Crafting item with recipe ID:', recipeId);
         try {
-            await api.craft.craftItem(recipeId);
-            fetchInventory(); // Refresh inventory after crafting
-            onTradeAction(); // Refresh user data (coins/resources)
+            let res = await api.craft.craftItem(recipeId);
+            if(res)
+            {
+                alert('Предмет успешно создан!');
+                fetchInventory(); // Refresh inventory after crafting
+                onRefreshCoin(); // Refresh user data (coins/resources)
+            }
+            else
+            {
+                alert('Не удалось создать предмет, нехватает ресурсов');
+            }
         } catch (err) {
             console.error('Failed to craft item:', err);
         }
