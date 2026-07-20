@@ -3,7 +3,7 @@ const url_host_dev: string = 'http://localhost:5000/api/v1/';
 const url_host: string = url_host_dev;
 
 export const api = {
-  
+    
     users: {
         getAll: () => {
             return fetch(url_host+'users')
@@ -156,6 +156,45 @@ export const api = {
                 return data.result;
             });
         }
+    },
+    leveling: {
+        getUserLevelData: () => {
+            return fetch(url_host+'getuserleveldata', {
+                credentials: 'include',
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok for /getuserleveldata. Status: ' + response.status);
+                    }
+                    return response.json();
+                });
+        },
+        addLevelUp: () => {
+            return fetch(url_host+'addlevelup', {
+                method: 'POST',
+                credentials: 'include',
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok for /addlevelup. Status: ' + response.status);
+                    }
+                    return response.json();
+                });
+        },
+        addSkillUp: (skillId: number) => {
+            return fetch(url_host+'addskillup', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ SkillId: skillId }),
+                credentials: 'include',
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok for /addskillup. Status: ' + response.status);
+                    }
+                    return response.json();
+                });
+        }
     }
 };
 
@@ -173,4 +212,17 @@ export interface CraftingRecipe {
   requiredItems: CraftingIngredient[];
   craftingTimeSeconds: number;
   craftingType: number;
+}
+
+export interface UserLevelData {
+    level: number;
+    xp: number;
+    xpToNextLevel: number;
+    skills: Array<{
+        id: number;
+        name: string;
+        description: string;
+        cost: number;
+        learned: boolean;
+    }>;
 }

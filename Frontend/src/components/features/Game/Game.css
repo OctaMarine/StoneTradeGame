@@ -1,4 +1,3 @@
-/* GameActions.module.css - Стили для кнопок действий в игре */
 
 /* Контейнер для кнопок действий (например, выход) */
 .action-buttons-container-left-aligned {
@@ -60,7 +59,12 @@
 .app-container {
     position: relative;
 }
-
+.App {
+    text-align: center;
+    min-height: 100vh;
+    background: #312a33;
+    padding: 20px;
+}
 /* Контейнер информации (приветствие и монеты) */
 .game-info-container {
     text-align: center;

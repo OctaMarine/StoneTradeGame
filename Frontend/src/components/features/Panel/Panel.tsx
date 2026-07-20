@@ -1,6 +1,6 @@
-﻿import React, {useEffect, useState} from 'react';
+﻿import React, {useEffect, useState, useCallback} from 'react';
 import { api, type CraftingIngredient,type CraftingRecipe } from '@/lib/api';
-import './GameMenu.css';
+import './Panel.css';
 import './ItemGrid.css';
 import { getItemMetadata } from '@/lib/itemsMetadata';
 
@@ -22,11 +22,11 @@ interface TradeItemDTO {
 
 // Интерфейс для пропсов компонента Panel
 interface PanelProps {
-    onRefreshCoin: () => void;
+    onRefreshUserData: () => void;
     onRefreshInventory: (refreshFn: () => void) => void;
 }
 
-const Panel: React.FC<PanelProps> = ({ onRefreshCoin ,onRefreshInventory}) => {
+const Panel: React.FC<PanelProps> = ({ onRefreshUserData ,onRefreshInventory}) => {
     // Состояние для активной панели
     const [activePanel, setActivePanel] = useState<PanelType>('inventory');
     const [inventoryItems, setInventoryItems] = useState<InventoryItemDTO[]>([]);
@@ -43,28 +43,25 @@ const Panel: React.FC<PanelProps> = ({ onRefreshCoin ,onRefreshInventory}) => {
         setActivePanel(item);
     };
 
-    const fetchInventory = async () => {
+    const fetchInventory = useCallback(async () => {
         try {
             const data: InventoryItemDTO[] = await api.inventory.getUserInventoryItems();
             setInventoryItems(data);
         } catch (err) {
             console.error('Failed to fetch inventory:', err);
         }
-    };
-    useEffect(() => {
-        onRefreshInventory(fetchInventory);
-    }, []); 
+    }, []); // пустой массив - функция создается один раз
 
-    const fetchTrade = async () => {
+    const fetchTrade = useCallback(async () => {
         try {
             const data: TradeItemDTO[] = await api.inventory.getTradeItems();
             setTradeItems(data || []);
         } catch (err) {
             console.error('Failed to fetch trade:', err);
         }
-    };
+    }, []);
 
-    const fetchCraftableRecipes = async () => {
+    const fetchCraftableRecipes = useCallback(async () => {
         try {
             const data: CraftingRecipe[] = await api.craft.getAvailableRecipes();
             setCraftableRecipes(data);
@@ -72,18 +69,22 @@ const Panel: React.FC<PanelProps> = ({ onRefreshCoin ,onRefreshInventory}) => {
             setCraftableRecipes([]);
             console.error('Failed to fetch craftable recipes:', err);
         }
-    };
+    }, []);
 
     const handleBuy = async (itemId : number) => {
         console.log('Покупка товара с ID:', itemId);
         try {
             await api.trade.buyTrade(itemId);
-            onRefreshCoin(); // Call to refresh user data (coins) and trade items
+            onRefreshUserData(); // Call to refresh user data (coins) and trade items
             fetchTrade();
         } catch (err) {
             console.error('Failed to fetch trade:', err);
         }
     };
+
+    useEffect(() => {
+        onRefreshInventory(fetchInventory);
+    }, [onRefreshInventory, fetchInventory]); 
 
     const handleSellClick = (item: InventoryItemDTO) => {
         setSelectedItem(item);
@@ -104,7 +105,7 @@ const Panel: React.FC<PanelProps> = ({ onRefreshCoin ,onRefreshInventory}) => {
             setIsSellModalOpen(false);
             setSelectedItem(null);
             fetchInventory(); // Refresh inventory after selling
-            onRefreshCoin(); // Call to refresh user data (coins)
+            onRefreshUserData(); // Call to refresh user data (coins)
         } catch (err) {
             console.error('Failed to set trade:', err);
         }
@@ -118,7 +119,7 @@ const Panel: React.FC<PanelProps> = ({ onRefreshCoin ,onRefreshInventory}) => {
             {
                 alert('Предмет успешно создан!');
                 fetchInventory(); // Refresh inventory after crafting
-                onRefreshCoin(); // Refresh user data (coins/resources)
+                onRefreshUserData(); // Refresh user data (coins/resources)
             }
             else
             {
@@ -137,7 +138,7 @@ const Panel: React.FC<PanelProps> = ({ onRefreshCoin ,onRefreshInventory}) => {
         } else if (activePanel === 'craft') {
             fetchCraftableRecipes();
         }
-    }, [activePanel]);
+    }, [activePanel, fetchInventory, fetchTrade, fetchCraftableRecipes]);
 
     return (
         <div className="panel">
