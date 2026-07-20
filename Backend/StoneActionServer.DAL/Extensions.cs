@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StoneActionServer.DAL.Repositories;
+using StoneActionServer.DAL.Repositories.Leveling;
 
 namespace StoneActionServer.DAL;
 
@@ -22,6 +23,7 @@ public static class Extensions
         serviceCollection.AddScoped<IInventoryRepository,InventoryRepository>();
         serviceCollection.AddScoped<ITradeRepository,TradeRepository>();
         serviceCollection.AddScoped<ICraftingRepository,CraftingRepository>();
+        serviceCollection.AddScoped<ILevelingRepository,LevelingRepository>();
         return serviceCollection;
     }
 }

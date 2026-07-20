@@ -14,13 +14,16 @@ public sealed class AppDbContext : DbContext
     public DbSet<TradeSlot> TradeSlots { get; set; }
     public DbSet<CraftingRecipe> CraftingRecipe { get; set; }
     public DbSet<CraftingIngredient> CraftingIngredient { get; set; }
-    
+
+    public DbSet<Skill> Skills { get; set; }
+    public DbSet<UserSkill> UserSkills { get; set; }
+    public DbSet<SkillCraftRecipe> SkillCraftRecipes { get; set; }
+
     public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)
     {
-
     }
-    
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new UserConfiguration());
@@ -30,6 +33,10 @@ public sealed class AppDbContext : DbContext
         modelBuilder.ApplyConfiguration(new TradeSlotConfiguration());
         modelBuilder.ApplyConfiguration(new CraftingRecipeConfiguration());
         modelBuilder.ApplyConfiguration(new CraftingIngredientConfiguration());
+        modelBuilder.ApplyConfiguration(new SkillConfiguration());
+        modelBuilder.ApplyConfiguration(new UserSkillConfiguration());
+        modelBuilder.ApplyConfiguration(new SkillCraftRecipeConfiguration());
+
         base.OnModelCreating(modelBuilder);
     }
 }
