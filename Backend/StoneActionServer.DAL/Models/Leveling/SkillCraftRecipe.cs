@@ -2,7 +2,6 @@ namespace StoneActionServer.DAL.Models;
 
 public class SkillCraftRecipe
 {
-    public int Id { get; set; }
     public int CraftRecipeId { get; set; }
     public int SkillId { get; set; }
     

@@ -1,6 +1,7 @@
 const url_host_dev: string = 'http://localhost:5000/api/v1/';
-//const url_host_prod: string = 'http://192.168.0.142:5000/api/v1/';
-const url_host: string = url_host_dev;
+const url_host_prod: string = 'http://192.168.0.142:5000/api/v1/';
+const url_host_proxy: string = '/api/v1/';
+const url_host: string =url_host_dev;
 
 export const api = {
     
@@ -14,21 +15,38 @@ export const api = {
         }
     },
     auth: {
-        login: (userName: string, password: string) => {
-            return fetch(url_host+'login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ UserName: userName, Password: password }),
-                credentials: 'include', // Важно для отправки и получения cookie
-            }).then(response => {
-                if (!response.ok) {
-                    return response.text().then(text => {
-                        throw new Error('Login failed: ' + text);
-                    });
-                }
-                return response.ok; // Ожидаем успешный статус, cookie установится автоматически
-            });
-        },
+        login: async (userName: string, password: string) => {
+    try {
+        const url = url_host + 'login';
+        console.log('[DEBUG] Запрос на:', url);
+        
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ UserName: userName, Password: password }),
+            credentials: 'include',
+        });
+
+        console.log('[DEBUG] Статус ответа:', response.status);
+        const text = await response.text();
+        console.log('[DEBUG] Тело ответа:', text);
+
+        if (!response.ok) {
+            const err = `❌ ОШИБКА ЛОГИНА: ${response.status}\n${text}`;
+            alert(err); // Покажет ошибку прямо на телефоне
+            throw new Error(err);
+        }
+
+
+        return true;
+    } catch (err: any) {
+        // Срабатывает при Network Error, CORS или разрыве соединения
+        const netErr = `🚫 СЕТЕВАЯ/КОРС ОШИБКА: ${err.message || err}`;
+        alert(netErr);
+        console.error('[DEBUG CATCH]', netErr);
+        throw err;
+    }
+},
         register: (userName: string, password: string, email: string) => {
             const formData = new FormData();
             formData.append('userName', userName);
@@ -158,45 +176,32 @@ export const api = {
         }
     },
     leveling: {
-        getUserLevelData: () => {
-            return fetch(url_host+'getuserleveldata', {
-                credentials: 'include',
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok for /getuserleveldata. Status: ' + response.status);
-                    }
-                    return response.json();
-                });
-        },
-        addLevelUp: () => {
-            return fetch(url_host+'addlevelup', {
-                method: 'POST',
-                credentials: 'include',
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok for /addlevelup. Status: ' + response.status);
-                    }
-                    return response.json();
-                });
-        },
-        addSkillUp: (skillId: number) => {
-            return fetch(url_host+'addskillup', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ SkillId: skillId }),
-                credentials: 'include',
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok for /addskillup. Status: ' + response.status);
-                    }
-                    return response.json();
-                });
+    getSkillTree: (): Promise<UserSkillNode[]> => {
+      return fetch(url_host + 'leveling/skills', {
+        credentials: 'include',
+      }).then(response => {
+        if (!response.ok) throw new Error(`Failed to fetch skills: ${response.status}`);
+        return response.json();
+      });
+    },
+
+    upgradeSkill: (skillId: number): Promise<void> => {
+      return fetch(url_host + 'leveling/upgrade', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ skillId }), // Профессиональный JSON-запрос
+        credentials: 'include',
+      }).then(async response => {
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || `Failed to upgrade skill: ${response.status}`);
         }
+      });
     }
+  }
 };
+
+export default api;
 
 export interface CraftingIngredient {
   id: number;
@@ -213,16 +218,18 @@ export interface CraftingRecipe {
   craftingTimeSeconds: number;
   craftingType: number;
 }
-
-export interface UserLevelData {
-    level: number;
-    xp: number;
-    xpToNextLevel: number;
-    skills: Array<{
-        id: number;
-        name: string;
-        description: string;
-        cost: number;
-        learned: boolean;
-    }>;
+export interface UserSkillNode {
+  skillId: number;
+  skillName: string;
+  description?: string;
+  iconFileName?: string; // Имя файла с бэкенда
+  parentSkillId: number | null;
+  currentLevel: number;
+  maxLevel: number;
+  progress: number;
+  isOpen: boolean;
+  isAvailable: boolean;
+  positionX: number;
+  positionY: number;
+  children: UserSkillNode[];
 }

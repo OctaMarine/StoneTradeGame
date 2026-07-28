@@ -1,10 +1,14 @@
+import React from 'react';
+import type { UserSkillNode } from '@/lib/api';
+
 interface Props {
-  edges: { from: string; to: string }[];
-  nodes: Record<string, { x: number; y: number }>;
-  activeNodes: string[];
+  edges: { from: number; to: number; isActive: boolean }[];
+  nodes: Record<number, UserSkillNode>;
+  offsetX: number;
+  offsetY: number;
 }
 
-export function Edges({ edges, nodes, activeNodes }: Props) {
+export function Edges({ edges, nodes, offsetX, offsetY }: Props) {
   return (
     <svg 
       style={{ 
@@ -13,20 +17,31 @@ export function Edges({ edges, nodes, activeNodes }: Props) {
         left: 0, 
         width: '100%', 
         height: '100%', 
-        pointerEvents: 'none' 
+        pointerEvents: 'none',
+        zIndex: 0 // Линии под нодами
       }}
     >
-      {edges.map(edge => {
-        const from = nodes[edge.from];
-        const to = nodes[edge.to];
-        const isActive = activeNodes.includes(edge.from) && activeNodes.includes(edge.to);
+      {edges.map((edge, index) => {
+        const fromNode = nodes[edge.from];
+        const toNode = nodes[edge.to];
+        
+        if (!fromNode || !toNode || fromNode.positionX === undefined || toNode.positionX === undefined) {
+            return null;
+        }
+
+        const x1 = fromNode.positionX + offsetX;
+        const y1 = fromNode.positionY + offsetY;
+        const x2 = toNode.positionX + offsetX;
+        const y2 = toNode.positionY + offsetY;
         
         return (
           <line
-            key={`${edge.from}-${edge.to}`}
-            className={`skill-edge ${isActive ? 'active' : ''}`}
-            x1={from.x} y1={from.y}
-            x2={to.x}   y2={to.y}
+            key={`edge-${index}`}
+            x1={x1} y1={y1}
+            x2={x2} y2={y2}
+            stroke={edge.isActive ? '#555' : '#222'}
+            strokeWidth={edge.isActive ? 3 : 2}
+            strokeDasharray={edge.isActive ? '0' : '5,5'} // Пунктир для закрытых связей
           />
         );
       })}

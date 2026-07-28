@@ -1,20 +1,70 @@
-/* Leveling Page Styles */
+/* ============================================
+   Leveling Page - Магический Фиолетовый
+   ============================================ */
+
 .leveling-page {
     min-height: 100vh;
-    background: linear-gradient(135deg, #6a1b9a 0%, #4a148c 50%, #1a237e 100%);
-    color: #ffffff;
+    background: 
+        radial-gradient(circle at 50% 20%, rgba(123, 44, 191, 0.15) 0%, transparent 50%),
+        linear-gradient(180deg, #0f081a 0%, #05020a 100%);
+    color: #e0d4f7;
     padding: 2rem;
     display: flex;
     flex-direction: column;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    
+    /* ВАЖНО: Делаем страницу "якорем" для абсолютного позиционирования кнопки */
+    position: relative; 
 }
 
-/* Skill Tree Container */
+/* Лёгкая текстура поверх фона */
+.leveling-page::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    opacity: 0.5;
+    z-index: 0;
+}
+
+.leveling-page > * {
+    position: relative;
+    z-index: 1;
+}
+
+
+
+/* ============================================
+   Контейнер дерева навыков
+   ============================================ */
+
 .skill-tree-container {
     flex: 1;
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    margin-top: 200px;
+    width: 100%;
+    
+    /* ПРИНУДИТЕЛЬНЫЙ отступ сверху, чтобы дерево НАЧАЛОСЬ ниже кнопки */
+    /* Кнопка занимает ~44px + 2rem (32px) top = ~76px. Ставим 100px с запасом. */
+    margin-top: 100px; 
+}
+
+/* Loading / Error states */
+.loading, .error {
+    color: #c77dff;
+    font-size: 1.1rem;
+    text-align: center;
+    padding: 3rem;
+    font-family: 'Cinzel', serif;
+    letter-spacing: 1px;
+    margin-top: 100px; /* Тоже сдвигаем, если будет ошибка загрузки */
+}
+
+.error {
+    color: #ff6b6b;
+    text-shadow: 0 0 10px rgba(255, 107, 107, 0.4);
 }
 
 /* Responsive Design */
@@ -23,8 +73,18 @@
         padding: 1rem;
     }
     
+    .action-buttons-container-right-aligned {
+        top: 1rem;
+        right: 1rem;
+    }
+    
     .action-button {
-        padding: 0.6rem 1.5rem;
-        font-size: 0.9rem;
+        width: 160px;
+        height: 40px;
+        font-size: 0.85rem;
+    }
+
+    .skill-tree-container, .loading, .error {
+        margin-top: 80px; /* Чуть меньше отступ на мобильных */
     }
 }

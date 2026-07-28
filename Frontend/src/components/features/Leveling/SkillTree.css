@@ -1,174 +1,210 @@
 /* ============================================
-   Skill Tree Viewport - Фэнтези стиль
+   Skill Tree Viewport - Магический Кристалл
    ============================================ */
 
 .skill-tree-viewport {
-  position: relative;
-  width: 100%;
-  height: 600px;
-  overflow: auto;
-  background: 
-    radial-gradient(ellipse at center, #2a1810 0%, #0f0805 100%),
-    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect fill="%231a0f08" width="100" height="100"/><path d="M0 0L100 100M100 0L0 100" stroke="%23332010" stroke-width="0.5" opacity="0.3"/></svg>');
-  border: 3px solid #8b6914;
-  border-radius: 12px;
-  box-shadow: 
-    inset 0 0 80px rgba(139, 105, 20, 0.2),
-    0 0 30px rgba(139, 105, 20, 0.3),
-    0 10px 40px rgba(0, 0, 0, 0.8);
+    position: relative;
+    width: 100%;
+    height: 75vh;
+    min-height: 600px;
+    overflow: auto;
+    background: 
+        radial-gradient(circle at 30% 30%, rgba(157, 78, 221, 0.05) 0%, transparent 40%),
+        #0a0514;
+    border: 1px solid rgba(157, 78, 221, 0.3);
+    border-radius: 4px;
+    box-shadow: 
+        inset 0 0 80px rgba(10, 5, 20, 0.9),
+        0 0 40px rgba(123, 44, 191, 0.15);
 }
 
-/* Декоративная рамка */
 .skill-tree-viewport::before {
-  content: '';
-  position: absolute;
-  inset: 8px;
-  border: 2px solid rgba(251, 191, 36, 0.3);
-  border-radius: 8px;
-  pointer-events: none;
-  z-index: 0;
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border: 1px solid rgba(157, 78, 221, 0.15);
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 0;
 }
 
 .skill-tree-world {
-  position: relative;
-  z-index: 1;
-  margin: 0 auto;
+    position: relative;
+    z-index: 1;
+    margin: 0 auto;
 }
 
 /* ============================================
-   Skill Node - Фэнтези стиль
+   Skill Node - Магические Узлы
    ============================================ */
 
 .skill-node {
-  position: absolute;
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-size: 12px;
-  font-weight: bold;
-  font-family: 'Georgia', serif;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-  user-select: none;
-  border: 3px solid;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    position: absolute;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #e0d4f7;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: 'Cinzel', serif;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+    border: 2px solid;
+    background: #000000;
+    box-sizing: border-box;
 }
 
 .skill-node:hover {
-  transform: scale(1.15);
-  z-index: 10;
+    transform: scale(1.1);
+    z-index: 10;
+}
+
+.skill-node img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    margin-bottom: 2px;
+    transition: filter 0.3s ease;
 }
 
 /* ---------- Состояния ---------- */
 
-/* Заблокированная нода - тёмный камень */
 .skill-node.locked {
-  background: radial-gradient(circle at 30% 30%, #333, #1a1a1a);
-  border-color: #555;
-  color: #666;
-  cursor: not-allowed;
-  box-shadow: 
-    inset 0 2px 8px rgba(0, 0, 0, 0.8),
-    0 2px 4px rgba(0, 0, 0, 0.6);
+    border-color: #604696;
+    color: #4a3f65;
+    cursor: not-allowed;
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.8);
+}
+
+.skill-node.locked img {
+    filter: grayscale(100%) brightness(0.3);
 }
 
 .skill-node.locked:hover {
-  transform: scale(1);
+    transform: scale(1);
 }
 
-/* Доступная нода - магическая зелень */
-.skill-node.available {
-  background: radial-gradient(circle at 30% 30%, #2d6b4a, #1a4d2e);
-  border-color: #4ade80;
-  box-shadow: 
-    0 0 12px rgba(74, 222, 128, 0.6),
-    0 0 24px rgba(74, 222, 128, 0.3),
-    inset 0 2px 6px rgba(74, 222, 128, 0.3);
-  animation: pulse-magic 2s ease-in-out infinite;
-}
-
-@keyframes pulse-magic {
-  0%, 100% {
-    box-shadow: 
-      0 0 12px rgba(74, 222, 128, 0.6),
-      0 0 24px rgba(74, 222, 128, 0.3),
-      inset 0 2px 6px rgba(74, 222, 128, 0.3);
-  }
-  50% {
-    box-shadow: 
-      0 0 18px rgba(74, 222, 128, 0.9),
-      0 0 36px rgba(74, 222, 128, 0.5),
-      inset 0 2px 10px rgba(74, 222, 128, 0.5);
-  }
-}
-
-/* Активная нода - золотая руна */
 .skill-node.active {
-  background: radial-gradient(circle at 30% 30%, #b45309, #7c2d12);
-  border-color: #fbbf24;
-  box-shadow: 
-    0 0 16px rgba(251, 191, 36, 0.8),
-    0 0 32px rgba(251, 191, 36, 0.4),
-    inset 0 2px 8px rgba(251, 191, 36, 0.4);
+    border-color: #9d4edd;
+    color: #e0aaff;
+    box-shadow: 
+        0 0 12px rgba(157, 78, 221, 0.4),
+        inset 0 0 10px rgba(157, 78, 221, 0.1);
+}
+
+.skill-node.active:hover {
+    border-color: #c77dff;
+    box-shadow: 
+        0 0 20px rgba(199, 125, 255, 0.6),
+        inset 0 0 15px rgba(199, 125, 255, 0.2);
+}
+
+.skill-node.active img {
+    filter: drop-shadow(0 0 4px rgba(199, 125, 255, 0.6));
+}
+
+.skill-node.available {
+    border-color: #e0aaff;
+    color: #ffffff;
+    background: radial-gradient(circle at 30% 30%, #3c096c, #240046);
+    box-shadow: 
+        0 0 15px rgba(224, 170, 255, 0.6),
+        0 0 30px rgba(157, 78, 221, 0.4),
+        inset 0 0 10px rgba(224, 170, 255, 0.2);
+    animation: magic-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes magic-pulse {
+    0%, 100% { box-shadow: 0 0 15px rgba(224, 170, 255, 0.6), 0 0 30px rgba(157, 78, 221, 0.4); }
+    50% { box-shadow: 0 0 25px rgba(224, 170, 255, 0.9), 0 0 50px rgba(157, 78, 221, 0.6); }
+}
+
+.skill-node.maxed {
+    border-color: #ffd700;
+    color: #ffd700;
+    box-shadow: 
+        0 0 10px rgba(255, 215, 0, 0.3),
+        inset 0 0 8px rgba(255, 215, 0, 0.1);
 }
 
 /* ============================================
-   Edges - Магические линии
+   Progress Bar - Поток маны
+   ============================================ */
+
+.skill-node .progress-container {
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    height: 3px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(157, 78, 221, 0.3);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.skill-node .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #7b2cbf 0%, #e0aaff 100%);
+    box-shadow: 0 0 8px rgba(224, 170, 255, 0.8);
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.skill-node .progress-text {
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 9px;
+    color: #c77dff;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    text-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
+}
+
+/* ============================================
+   Edges - Магические связи
    ============================================ */
 
 .skill-edge {
-  stroke: #444;
-  stroke-width: 2;
-  fill: none;
-  transition: stroke 0.3s ease, stroke-width 0.3s ease;
+    stroke: #2a1f40;
+    stroke-width: 1.5;
+    fill: none;
+    transition: all 0.4s ease;
 }
 
 .skill-edge.active {
-  stroke: #ffd700;
-  stroke-width: 4;
-  filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.8));
+    stroke: #9d4edd;
+    stroke-width: 2.5;
+    filter: drop-shadow(0 0 4px rgba(157, 78, 221, 0.8));
 }
 
 /* ============================================
-   Скроллбар - Фэнтези
+   Скроллбар
    ============================================ */
 
 .skill-tree-viewport::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+    width: 6px;
+    height: 6px;
 }
 
 .skill-tree-viewport::-webkit-scrollbar-track {
-  background: rgba(42, 24, 16, 0.8);
-  border-radius: 5px;
+    background: #0a0514;
 }
 
 .skill-tree-viewport::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #8b6914, #5c4510);
-  border-radius: 5px;
-  border: 1px solid #fbbf24;
+    background: #3c096c;
+    border-radius: 3px;
 }
 
 .skill-tree-viewport::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #a67c1a, #7c5a14);
-}
-
-.skill-node {
-  width: 60px;
-  height: 60px;
-  font-size: 10px;
-  text-align: center;
-  padding: 4px;
-  line-height: 1.2;
-}
-
-.skill-node-text {
-  display: block;
-  word-wrap: break-word;
-  overflow: hidden;
-  max-height: 100%;
+    background: #7b2cbf;
 }

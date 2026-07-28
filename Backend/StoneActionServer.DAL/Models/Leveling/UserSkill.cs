@@ -9,10 +9,9 @@ public class UserSkill
 
     public bool IsOpen { get; set; }
     public bool IsAvailable { get; set; }
-    
     public int CurrentLevel { get; set; }
-    public float LevelProgressReward { get; set; }
-
-    public virtual User? User { get; set; }
-    public virtual Skill? Skill { get; set; }
+    public float Progress { get; set; }
+    
+    public User? User { get; set; }
+    public Skill? Skill { get; set; }
 }

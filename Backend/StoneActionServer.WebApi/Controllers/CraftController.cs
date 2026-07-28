@@ -11,10 +11,12 @@ namespace StoneActionServer.WebApi.Controllers
     public class CraftController : BaseApiController
     {
         private readonly ICraftingService _craftingService;
+        private readonly ILevelingService _levelingService;
 
-        public CraftController(ICraftingService craftingService,ICurrentUserService currentUserService) : base(currentUserService)
+        public CraftController(ICraftingService craftingService,ICurrentUserService currentUserService,ILevelingService levelingService) : base(currentUserService)
         {
             _craftingService = craftingService;
+            _levelingService = levelingService;
         }
 
         [Authorize]
@@ -27,12 +29,14 @@ namespace StoneActionServer.WebApi.Controllers
             }
             
             var result = await _craftingService.PerformCrafting(UserId, itemRequest.CraftingRecipeId);
+            
 
             if (!result)
             {
                 return Ok(new { result = false });;
             }
 
+            await _levelingService.AddProgressSkillAsync(UserId, itemRequest.CraftingRecipeId);
             return Ok(new { result = true });
         }
         

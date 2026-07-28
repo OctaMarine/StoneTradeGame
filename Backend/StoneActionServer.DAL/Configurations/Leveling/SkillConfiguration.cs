@@ -11,19 +11,34 @@ public class SkillConfiguration : IEntityTypeConfiguration<Skill>
         builder.ToTable("skill");
 
         builder.HasKey(s => s.Id);
+        builder.Property(s => s.Id)
+            .ValueGeneratedOnAdd();
 
         builder.Property(s => s.Name)
-            .HasColumnName("name")
-            .HasColumnType("text") 
+            .IsRequired()
+            .HasMaxLength(255);
+
+        builder.Property(s => s.Description)
+            .HasMaxLength(1000);
+
+        builder.Property(s => s.IconFileName)
+            .HasMaxLength(255);
+
+        builder.Property(s => s.PositionX)
             .IsRequired();
 
+        builder.Property(s => s.PositionY)
+            .IsRequired();
 
-        builder.Property(s => s.ParentSkillId)
-            .HasColumnName("parent_skill");
-        
+        builder.Property(s => s.MaxLevel)
+            .IsRequired()
+            .HasDefaultValue(1);
+
+        // Self-referencing связь (родитель -> дети)
         builder.HasOne(s => s.ParentSkill)
             .WithMany(s => s.ChildrenSkills)
             .HasForeignKey(s => s.ParentSkillId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Restrict); // Важно: Restrict, чтобы не сломать дерево при удалении
+        
     }
 }

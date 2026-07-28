@@ -48,5 +48,10 @@ namespace StoneActionServer.BusinessLogic.Services
         {
             return await _levelingRepository.UpgradeSkillAsync(userId, skillId);
         }
+
+        public async Task<bool> AddProgressSkillAsync(int userId, int craftRecipeId)
+        {
+            return await _levelingRepository.AddProgressSkillAsync(userId, craftRecipeId);
+        }
     }
 }

@@ -29,25 +29,38 @@ public class AuthController : BaseApiController
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequestDTO request)
     {
-        Console.WriteLine("Login ...");
-        var token = await _authService.Login(request.UserName, request.Password);
-        if (token == string.Empty)
+        Console.WriteLine("🔍 [AUTH] Получен запрос на логин");
+        Console.WriteLine("🔍 [AUTH] Origin: " + Request.Headers["Origin"].FirstOrDefault());
+        Console.WriteLine("🔍 [AUTH] Host: " + Request.Headers["Host"].FirstOrDefault());
+        Console.WriteLine("🔍 [AUTH] Cookie передана: " + (Request.Cookies.ContainsKey("accessToken") ? "ДА" : "НЕТ"));
+
+        if (request == null || string.IsNullOrEmpty(request.UserName))
         {
-            return BadRequest();
+            Console.WriteLine("🔍 [AUTH] ОШИБКА: Тело запроса пустое или неверный формат");
+            return BadRequest("Некорректные данные");
         }
-        Console.WriteLine("Login complete");
+
+        var token = await _authService.Login(request.UserName, request.Password);
+    
+        if (string.IsNullOrEmpty(token))
+        {
+            Console.WriteLine("🔍 [AUTH] ОШИБКА: _authService вернул пустой токен (неверный логин/пароль)");
+            return BadRequest("Неверный логин или пароль");
+        }
+
+        Console.WriteLine("🔍 [AUTH] Токен сгенерирован (длина: " + token.Length + ")");
 
         var cookieOptions = new CookieOptions
         {
-                     HttpOnly = true, // Самое главное: cookie недоступна через JavaScript
-                     //Secure = true,   // Отправлять cookie только по HTTPS
-                     Secure = false,              // ← HTTP в разработке
-                     SameSite = SameSiteMode.Lax,
-                     //SameSite = SameSiteMode.Lax, // Защита от CSRF
-                     // Expires = DateTime.UtcNow.AddDays(7) // Установите время жизни cookie
+            HttpOnly = true,
+            Secure = false,
+            SameSite = SameSiteMode.Lax,
+            //Expires = DateTime.UtcNow.AddDays(7)
         };
-        Console.WriteLine(token);
+
         Response.Cookies.Append("accessToken", token, cookieOptions);
-        return Ok();
+        Console.WriteLine("🔍 [AUTH] Cookie accessToken установлена. Настройки: HttpOnly=true, Secure=false, SameSite=Lax");
+
+        return Ok(new { message = "Login successful", tokenLength = token.Length });
     }
 }

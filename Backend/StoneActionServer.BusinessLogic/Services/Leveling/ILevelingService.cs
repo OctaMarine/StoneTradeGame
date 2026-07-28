@@ -6,5 +6,7 @@ namespace StoneActionServer.BusinessLogic.Services
     {
         Task<List<UserSkillNodeDTO>> GetUserSkillTreeAsync(int userId);
         Task<bool> UpgradeSkillAsync(int userId, int skillId);
+        Task<bool> AddProgressSkillAsync(int userId, int craftRecipeId);
+
     }
 }

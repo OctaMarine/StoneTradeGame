@@ -7,17 +7,26 @@ import path from 'path'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-// https://vite.dev/config/
 export default defineConfig({
-  plugins: [
-    react(),
-    tailwindcss(),
-  ],
+  plugins: [react(), tailwindcss()],
   server: {
-    port: 3333,
-    host: '0.0.0.0',
-     allowedHosts: true, // Позволяет подключаться по IP и делает сервер более "видимым"
-  },
+  port: 3333,
+  host: '0.0.0.0',
+  allowedHosts: true,
+  proxy: {
+    '/api': {
+      target: 'http://192.168.0.142:5000', // <-- Твой IP
+      changeOrigin: true,
+      secure: false,
+      configure: (proxy) => {
+        proxy.on('error', (err) => console.log('❌ [VITE PROXY ERROR]', err));
+        proxy.on('proxyReq', (proxyReq, req) => {
+          console.log(`🔀 [VITE PROXY] ${req.method} ${req.url} → ${proxyReq.path}`);
+        });
+      }
+    }
+  }
+},
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
