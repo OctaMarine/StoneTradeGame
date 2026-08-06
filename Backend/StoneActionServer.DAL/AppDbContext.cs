@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using StoneActionServer.DAL.Configurations;
 using StoneActionServer.DAL.Models;
+using StoneActionServer.DAL.Models.Modifiers;
 using StoneActionServer.DAL.Repositories;
 
 namespace StoneActionServer.DAL;
@@ -18,6 +19,7 @@ public sealed class AppDbContext : DbContext
     public DbSet<Skill> Skills { get; set; }
     public DbSet<UserSkill> UserSkills { get; set; }
     public DbSet<SkillCraftRecipe> SkillCraftRecipes { get; set; }
+    public DbSet<Modifier> Modifiers { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)
@@ -36,6 +38,7 @@ public sealed class AppDbContext : DbContext
         modelBuilder.ApplyConfiguration(new SkillConfiguration());
         modelBuilder.ApplyConfiguration(new UserSkillConfiguration());
         modelBuilder.ApplyConfiguration(new SkillCraftRecipeConfiguration());
+        modelBuilder.ApplyConfiguration(new ModifierConfiguration());
 
         base.OnModelCreating(modelBuilder);
     }
