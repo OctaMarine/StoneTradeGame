@@ -1,4 +1,3 @@
-import React from 'react';
 import type { UserSkillNode } from '@/lib/api';
 
 interface Props {

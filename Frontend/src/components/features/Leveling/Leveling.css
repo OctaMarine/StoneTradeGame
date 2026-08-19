@@ -72,17 +72,6 @@
     .leveling-page {
         padding: 1rem;
     }
-    
-    .action-buttons-container-right-aligned {
-        top: 1rem;
-        right: 1rem;
-    }
-    
-    .action-button {
-        width: 160px;
-        height: 40px;
-        font-size: 0.85rem;
-    }
 
     .skill-tree-container, .loading, .error {
         margin-top: 80px; /* Чуть меньше отступ на мобильных */

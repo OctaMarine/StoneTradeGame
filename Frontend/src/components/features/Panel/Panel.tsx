@@ -123,7 +123,7 @@ const Panel: React.FC<PanelProps> = ({ onRefreshUserData ,onRefreshInventory}) =
             }
             else
             {
-                alert('Не удалось создать предмет, нехватает ресурсов');
+                alert('Не удалось создать предмет');
             }
         } catch (err) {
             console.error('Failed to craft item:', err);
@@ -220,8 +220,7 @@ const Panel: React.FC<PanelProps> = ({ onRefreshUserData ,onRefreshInventory}) =
                                     />
                                     <span className="item-name">{craftedItemMetadata.name} x{recipe.resultQuantity}</span>
                                     <span className="craft-chance">Chance: {(recipe.chanceOfSuccess * 100).toFixed(0)}%</span>
-                                    
-                                        <span className="craft-time">Time: {recipe.craftingTimeSeconds}s</span>
+                                    <span className="craft-time">Time: {recipe.craftingTimeSeconds}s</span>
                                     
                                     <div className="craft-resources">
                                         {recipe.requiredItems?.map((resource) => {
@@ -234,6 +233,8 @@ const Panel: React.FC<PanelProps> = ({ onRefreshUserData ,onRefreshInventory}) =
                                                         className="resource-icon"
                                                     />
                                                     <span className="resource-quantity">x{resource.quantity}</span>
+                                                    <span className="item-name">{ getItemMetadata(resource.itemId).name}</span>
+
                                                 </div>
                                             );
                                         })}

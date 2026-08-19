@@ -55,6 +55,8 @@ public class AuthController : BaseApiController
             HttpOnly = true,
             Secure = false,
             SameSite = SameSiteMode.Lax,
+            //Domain = "192.168.0.142",      // ← Явно указать домен без порта
+            Path = "/",
             //Expires = DateTime.UtcNow.AddDays(7)
         };
 

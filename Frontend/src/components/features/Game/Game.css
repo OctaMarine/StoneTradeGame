@@ -10,35 +10,44 @@
 }
 
 .action-buttons-container-right-aligned {
-    /* Вырываем из потока и приклеиваем к правому верхнему углу */
     position: absolute;
-    top: 2rem;
-    right: 2rem;
-    z-index: 100; /* Гарантированно выше всего остального */
+    top: 0.8rem;      /* Было 2rem -> придвинули ближе к верху */
+    right: 0.8rem;    /* Было 2rem -> придвинули ближе к правому краю */
+    z-index: 100;
     
     display: flex;
     justify-content: flex-end;
+    gap: 0.4rem;      /* Расстояние между кнопками чуть меньше */
 }
 
 .action-button {
-    width: 180px;
-    height: 44px;
+    /* === РАЗМЕРЫ (Уменьшаем) === */
+    width: 100px;          /* Фиксированная ширина (было 90px) */
+    height: 30px;           /* Было 44px -> стало 32px (компактнее для мобилки) */
     
-    background: rgba(30, 17, 53, 0.8);
+    /* === ОТСТУПЫ === */
+    padding: 0 0.6rem;      /* Было 0.75rem -> чуть уменьшили боковые отступы */
+    
+    /* === ВИЗУАЛ (Твой Dark Fantasy стиль) === */
+    background: rgba(30, 17, 53, 0.85); /* Чуть плотнее фон для лучшей читаемости */
     color: #c77dff;
-    border: 1px solid rgba(157, 78, 221, 0.4);
-    padding: 0 1.5rem;
+    border: 1px solid rgba(157, 78, 221, 0.5); /* Чуть ярче рамка */
+    border-radius: 6px;     /* Добавил небольшое скругление (опционально) */
     
+    /* === ТЕКСТ === */
     font-family: 'Cinzel', 'Georgia', serif;
-    font-size: 0.9rem;
+    font-size: 0.7rem;      /* Было 0.9rem -> стало 0.7rem (важно для маленьких кнопок) */
     font-weight: 700;
-    letter-spacing: 1.5px;
+    letter-spacing: 1px;    /* Было 1.5px -> чуть уменьшили, чтобы текст влезал */
     text-transform: uppercase;
+    
+    /* === ЭФФЕКТЫ === */
     cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 0 15px rgba(157, 78, 221, 0.1);
+    transition: all 0.2s ease; /* Ускорили анимацию для отзывчивости */
+    box-shadow: 0 0 10px rgba(157, 78, 221, 0.15);
     backdrop-filter: blur(4px);
     
+    /* === ВЫРАВНИВАНИЕ === */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -49,16 +58,14 @@
     line-height: 1;
 }
 
-.action-button:hover {
-    background: rgba(123, 44, 191, 0.3);
-    border-color: #e0aaff;
-    color: #ffffff;
-    box-shadow: 0 0 25px rgba(157, 78, 221, 0.4);
-    text-shadow: 0 0 8px rgba(224, 170, 255, 0.8);
-}
-
+/* === СОСТОЯНИЕ НАЖАТИЯ / НАВЕДЕНИЯ === */
+.action-button:hover,
 .action-button:active {
-    transform: translateY(1px);
+    background: rgba(50, 25, 80, 0.95);
+    border-color: rgba(199, 125, 255, 0.8);
+    box-shadow: 0 0 12px rgba(157, 78, 221, 0.4);
+    transform: scale(0.96); /* Эффект вдавливания */
+    color: #e0aaff; /* Текст чуть светлеет при нажатии */
 }
 
 .player-icons {

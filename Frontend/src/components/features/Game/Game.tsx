@@ -49,24 +49,24 @@ export default function Game() {
                     </button>
                 </Link>
             </div>
-            <div className="action-buttons-container-right-aligned" style={{ marginTop: '70px'}}>
+            <div className="action-buttons-container-right-aligned" style={{ marginTop: '40px'}}>
                 <Link to="/leveling">
                     <button className="action-button">
                         Прокачка
                     </button>
                 </Link>
             </div>
-            <div className="action-buttons-container-right-aligned" style={{ marginTop: '140px'}}>
+            <div className="action-buttons-container-right-aligned" style={{ marginTop: '80px'}}>
                 <button className="action-button">
                     Настройки
                 </button>
             </div>
-            <div className="action-buttons-container-right-aligned" style={{ marginTop: '210px'}}>
+            <div className="action-buttons-container-right-aligned" style={{ marginTop: '120px'}}>
                 <button className="action-button">
                     Игроки
                 </button>
             </div>
-            <div className="action-buttons-container-right-aligned" style={{ marginTop: '280px'}}>
+            <div className="action-buttons-container-right-aligned" style={{ marginTop: '160px'}}>
                 <button 
                     className="action-button" 
                     onClick={handleAddSupply}>

@@ -1,7 +1,7 @@
 const url_host_dev: string = 'http://localhost:5000/api/v1/';
 const url_host_prod: string = 'http://192.168.0.142:5000/api/v1/';
 const url_host_proxy: string = '/api/v1/';
-const url_host: string =url_host_dev;
+const url_host: string =url_host_proxy;
 
 export const api = {
     
@@ -30,6 +30,10 @@ export const api = {
         console.log('[DEBUG] Статус ответа:', response.status);
         const text = await response.text();
         console.log('[DEBUG] Тело ответа:', text);
+
+const debugInfo = `[DEBUG] URL: ${url}\nStarts with /api: ${url.startsWith('/api')}`;
+alert(debugInfo); // Покажет всплывающее окно прямо на телефоне
+console.log(debugInfo);
 
         if (!response.ok) {
             const err = `❌ ОШИБКА ЛОГИНА: ${response.status}\n${text}`;

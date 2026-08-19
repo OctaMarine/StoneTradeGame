@@ -13,7 +13,7 @@ export const ITEMS_METADATA: Record<number, ItemMetadata> = {
     2: {
         id: 2,
         name: 'Mana Dust',
-        icon: '/icons/mana_dust.png'
+        icon: '/icons/crystal.svg'
     },
     3: {
         id: 3,
