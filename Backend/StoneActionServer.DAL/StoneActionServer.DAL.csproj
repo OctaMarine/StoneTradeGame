@@ -23,6 +23,7 @@
 
     <ItemGroup>
       <Folder Include="Repositories\Modifiers" />
+      <Folder Include="Repositories\User" />
     </ItemGroup>
 
 </Project>

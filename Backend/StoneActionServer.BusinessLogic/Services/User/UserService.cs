@@ -1,6 +1,6 @@
 ﻿namespace StoneActionServer.BusinessLogic.Services.Player;
 
-public class PlayerService
+public class UserService : IUserService
 {
     
 }

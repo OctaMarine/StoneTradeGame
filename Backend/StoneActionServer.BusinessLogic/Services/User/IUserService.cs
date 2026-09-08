@@ -1,6 +1,6 @@
 ﻿namespace StoneActionServer.BusinessLogic.Services.Player;
 
-public class IPlayerService
+public interface IUserService
 {
     
 }
