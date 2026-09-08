@@ -12,7 +12,6 @@ public static class Extensions
     {
         serviceCollection.Configure<AuthSettings>(configuration.GetSection("AuthSettings"));
         
-        //models
         serviceCollection.AddScoped<IModifierCalculator, YieldMultiplierCalculator>();
         serviceCollection.AddScoped<IModifierCalculator, ChanceMultiplierCalculator>();
         serviceCollection.AddScoped<IModifierCalculator, ChanceToDropExtraItemCalculator>();

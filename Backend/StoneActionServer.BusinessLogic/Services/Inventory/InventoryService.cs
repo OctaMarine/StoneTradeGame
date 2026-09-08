@@ -19,6 +19,19 @@ public class InventoryService : IInventoryService
 
     public UserMainDTO GetUserData(int userId)
     {
+        var inventory = _inventoryRepository.GetByUserId(userId).FirstOrDefault();
+        if (inventory == null)
+        {
+            throw new Exception("Inventory not found");
+        }
+        var coins = inventory.Coins;
+        var name = _context.Users.FirstOrDefault(u => u.Id == userId).UserName;
+        var dto = new UserMainDTO
+        {
+            Name = name,
+            Coins = coins
+        };
+        return dto;
         return _inventoryRepository.GetUserData(userId);
     }
 

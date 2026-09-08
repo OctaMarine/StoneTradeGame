@@ -7,7 +7,7 @@ using StoneActionServer.WebApi.DTO.Leveling;
 namespace StoneActionServer.WebApi.Controllers;
 
 [ApiController]
-[Route("api/v1/[controller]")]
+[Route("api/v1/leveling")]
 public class LevelingController : BaseApiController
 {
     private readonly ILevelingService _levelingService;

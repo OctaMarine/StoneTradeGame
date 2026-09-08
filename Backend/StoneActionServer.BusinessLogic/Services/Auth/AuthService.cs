@@ -10,13 +10,11 @@ public class AuthService : IAuthService
 {
     private readonly IAuthRepository _authRepository;
     private readonly JwtService _jwtService;
-    private readonly AppDbContext _context;
     
-    public AuthService(IAuthRepository authRepository, JwtService jwtService, AppDbContext context)
+    public AuthService(IAuthRepository authRepository, JwtService jwtService)
     {
         _authRepository = authRepository;
         _jwtService = jwtService;
-        _context = context;
     }
     
     public async Task<bool> Register(string userName, string password, string email, CancellationToken cancellationToken = default)
@@ -29,7 +27,7 @@ public class AuthService : IAuthService
         
         var inventory = new Inventory
         {
-            Coins = 10
+            Coins = 0
         };
 
         var user = new User

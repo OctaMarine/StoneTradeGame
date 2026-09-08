@@ -1,5 +1,4 @@
 using System.Text.Json;
-using Microsoft.Extensions.Logging;
 using StoneActionServer.BusinessLogic.Models.Crafting;
 using StoneActionServer.BusinessLogic.Models.Modifiers;
 using StoneActionServer.DAL.DTO;
@@ -23,7 +22,6 @@ namespace StoneActionServer.BusinessLogic.Services
             _calculators = calculators;
             _craftingRepository = craftingRepository;
             _modifierRepository = modifierRepository;
-            
         }
 
         public async Task<bool> PerformCrafting(int userId, int craftingRecipeId)
@@ -67,7 +65,6 @@ namespace StoneActionServer.BusinessLogic.Services
                     }
                     catch (Exception ex)
                     {
-                        //Ошибка при применении модификатора: ModifierType={ModifierType}", modifier.ModifierType);
                         return false;
                     }
                 }

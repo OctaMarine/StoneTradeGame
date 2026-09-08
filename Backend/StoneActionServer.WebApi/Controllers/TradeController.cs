@@ -7,7 +7,7 @@ using StoneActionServer.WebApi.DTO.Trade;
 namespace StoneActionServer.WebApi.Controllers;
 
 [ApiController]
-[Route("api/v1")]
+[Route("api/v1/trade")]
 public class TradeController : BaseApiController
 {
     private ITradeRepository _tradeRepository;

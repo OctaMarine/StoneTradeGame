@@ -4,7 +4,6 @@ using StoneActionServer.BusinessLogic.Services;
 namespace StoneActionServer.WebApi.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
 public abstract class BaseApiController : ControllerBase
 {
     private readonly ICurrentUserService _currentUserService;

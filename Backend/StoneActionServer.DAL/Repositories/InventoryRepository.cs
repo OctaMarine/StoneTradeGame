@@ -19,6 +19,14 @@ public class InventoryRepository : IInventoryRepository
         var coins = user.Coins;
         return coins;
     }
+
+    public IQueryable<Inventory> GetByUserId(int userId)
+    {
+        var inventory = _context.Inventories
+            .Include(i => i.Slots)
+            .Where(i => i.UserId == userId);
+        return inventory;
+    }
     
     public UserMainDTO GetUserData(int userId)
     {

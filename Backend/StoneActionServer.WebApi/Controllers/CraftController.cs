@@ -7,7 +7,7 @@ using StoneActionServer.BusinessLogic.Services;
 namespace StoneActionServer.WebApi.Controllers
 {
     [ApiController]
-    [Route("api/v1")]
+    [Route("api/v1/craft")]
     public class CraftController : BaseApiController
     {
         private readonly ICraftingService _craftingService;

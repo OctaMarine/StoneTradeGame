@@ -1,10 +1,12 @@
 ﻿using StoneActionServer.DAL.DTO;
+using StoneActionServer.DAL.Models;
 
 namespace StoneActionServer.DAL.Repositories;
 
 public interface IInventoryRepository
 {
     public int GetCoins(int userId);
+    public IQueryable<Inventory> GetByUserId(int userId);
     public UserMainDTO GetUserData(int userId);
     public IQueryable<UserInventoryItemDTO> GetUserInventoryItems(int userId);
     public Task<bool> GainCoins(int userId, int coins);

@@ -6,7 +6,7 @@ using StoneActionServer.BusinessLogic.Services;
 namespace StoneActionServer.WebApi.Controllers;
 
 [ApiController]
-[Route("api/v1")]
+[Route("api/v1/inventory")]
 public class InventoryController : BaseApiController
 {
     private readonly IAuthService _authService;
@@ -29,8 +29,6 @@ public class InventoryController : BaseApiController
     [HttpGet("users")]
     public async Task<IActionResult> GetUsers()
     {
-        var remoteIpAddress = HttpContext.Connection.RemoteIpAddress;
-        Console.WriteLine(remoteIpAddress +"   - IP");
         var result = await _authService.GetAllUsers();
         return Ok(result.ToArray().Length);
     }

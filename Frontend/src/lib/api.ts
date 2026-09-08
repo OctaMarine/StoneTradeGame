@@ -17,7 +17,7 @@ export const api = {
     auth: {
         login: async (userName: string, password: string) => {
     try {
-        const url = url_host + 'login';
+        const url = url_host + 'auth/login';
         console.log('[DEBUG] Запрос на:', url);
         
         const response = await fetch(url, {
@@ -57,7 +57,7 @@ console.log(debugInfo);
             formData.append('password', password);
             formData.append('email', email);
 
-            return fetch(url_host+'register', {
+            return fetch(url_host+'auth/register', {
                 method: 'POST',
                 body: formData, // Отправляем как FormData
                 credentials: 'include', // Важно для отправки и получения cookie
@@ -73,7 +73,7 @@ console.log(debugInfo);
     },
     inventory : {
         userData: () => {
-            return fetch(url_host+'userdata', {
+            return fetch(url_host+'inventory/userdata', {
                 credentials: 'include', // Автоматически отправляет cookie с токеном
             })
             .then(response => {
@@ -84,7 +84,7 @@ console.log(debugInfo);
             });
         },
         getUserInventoryItems: () => {
-            return fetch(url_host+'userinventoryitems', {
+            return fetch(url_host+'inventory/userinventoryitems', {
                 credentials: 'include',
             })
                 .then(response => {
@@ -95,7 +95,7 @@ console.log(debugInfo);
                 });
         },
         getTradeItems: () => {
-            return fetch(url_host+'getalltrade', {
+            return fetch(url_host+'inventory/getalltrade', {
                 credentials: 'include',
             })
                 .then(response => {
@@ -106,7 +106,7 @@ console.log(debugInfo);
                 });
         },
         addSupply: () => {
-            return fetch(url_host+'addsupply', {
+            return fetch(url_host+'inventory/addsupply', {
                 method: 'POST',
                 credentials: 'include',
             })
@@ -120,7 +120,7 @@ console.log(debugInfo);
     },
     trade : {
         buyTrade: (tradeId: number) => {
-            return fetch(url_host+'buytrade', {
+            return fetch(url_host+'trade/buytrade', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ TradeId: tradeId }),
@@ -137,7 +137,7 @@ console.log(debugInfo);
             formData.append('itemId', itemId.toString());
             formData.append('price', price.toString());
     
-            return fetch(url_host + 'settrade', {
+            return fetch(url_host + 'trade/settrade', {
                 method: 'POST',
                 body: formData,
                 credentials: 'include',
@@ -153,7 +153,7 @@ console.log(debugInfo);
     },
     craft: {
         getAvailableRecipes: (): Promise<CraftingRecipe[]> => {
-            return fetch(url_host + 'recipes', {
+            return fetch(url_host + 'craft/recipes', {
                 credentials: 'include',
             })
             .then(response => {
@@ -164,7 +164,7 @@ console.log(debugInfo);
             });
         },
         craftItem: (craftingRecipeId: number) => {
-            return fetch(url_host + 'craft', {
+            return fetch(url_host + 'craft/craft', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ CraftingRecipeId: craftingRecipeId }),
