@@ -1,9 +1,5 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using StoneActionServer.DAL.DTO;
+using StoneActionServer.DAL;
 using StoneActionServer.DAL.DTO.Leveling;
-using StoneActionServer.DAL.Models;
 using StoneActionServer.DAL.Repositories;
 
 namespace StoneActionServer.BusinessLogic.Services
@@ -11,10 +7,12 @@ namespace StoneActionServer.BusinessLogic.Services
     public class LevelingService : ILevelingService
     {
         private readonly ILevelingRepository _levelingRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public LevelingService(ILevelingRepository levelingRepository)
+        public LevelingService(ILevelingRepository levelingRepository, IUnitOfWork unitOfWork)
         {
             _levelingRepository = levelingRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<List<UserSkillNodeDTO>> GetUserSkillTreeAsync(int userId)
@@ -46,12 +44,66 @@ namespace StoneActionServer.BusinessLogic.Services
 
         public async Task<bool> UpgradeSkillAsync(int userId, int skillId)
         {
-            return await _levelingRepository.UpgradeSkillAsync(userId, skillId);
+            await using var transaction = await _unitOfWork.BeginTransactionAsync();
+
+            try
+            {
+                var skill = await _levelingRepository.GetSkillByIdAsync(skillId,true);
+                if (skill == null) return false;
+
+                var userSkill = await _levelingRepository.GetUserSkillAsync(userId,skillId);
+
+                if (userSkill == null || !userSkill.IsAvailable || userSkill.Progress < 1f)
+                {
+                    return false;
+                }
+
+                if (skill.ParentSkillId.HasValue)
+                {
+                    var parentUserSkill = await _levelingRepository.GetUserSkillAsync(userId,skill.ParentSkillId.Value);
+                    if (parentUserSkill == null || parentUserSkill.CurrentLevel < 1)
+                    {
+                        return false;
+                    }
+                }
+
+                userSkill.CurrentLevel += 1;
+                userSkill.Progress = 0f;
+                userSkill.IsAvailable = false; // Блокируем до набора новых 100%
+            
+                await _levelingRepository.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                return true;
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         public async Task<bool> AddProgressSkillAsync(int userId, int craftRecipeId)
         {
-            return await _levelingRepository.AddProgressSkillAsync(userId, craftRecipeId);
+            var skillCraftRecipe = await _levelingRepository.GetSkillCraftRecipeByIdAsync(craftRecipeId);
+
+            if (skillCraftRecipe == null) 
+                return false;
+        
+            var userSkill = await _levelingRepository.GetUserSkillAsync(userId,skillCraftRecipe.SkillId);
+
+            if (userSkill == null) 
+                return false;
+        
+            userSkill.Progress += skillCraftRecipe.LevelProgressReward;
+        
+            if (userSkill.Progress >= 1f)
+            {
+                userSkill.Progress = 1f;
+            }
+
+            await _levelingRepository.SaveChangesAsync();
+            return true;
         }
     }
 }

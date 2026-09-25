@@ -14,40 +14,24 @@ public class TradeRepository : ITradeRepository
         _context = context;
     }
 
-    public async Task<(bool, int)> Set(int userId, int itemId, int price)
+    public async Task AddAsync(TradeSlot tradeSlot)
     {
-        var item = _context.Items.FirstOrDefault(i => i.Id == itemId);
-        var user = _context.Users.FirstOrDefault(i => i.Id == userId);
-
-        var tradeSlot = new TradeSlot
-        {
-            Price = price,
-            Item = item,
-            User = user
-        };
-        
-        var inventory = _context.Inventories
-            .Include(i => i.Slots)
-            .FirstOrDefault(i => i.UserId == userId);
-        
-        var slot = inventory.Slots.FirstOrDefault(s => s.ItemId == itemId);
-        if (slot == null)
-        {
-            return (false,-1);
-        }
-        _context.Slots.Remove(slot);
-
         await _context.TradeSlots.AddAsync(tradeSlot);
         await _context.SaveChangesAsync();
-        return (true,tradeSlot.Id);
     }
 
-    public async Task<bool> Remove(int userId, int tradeId)
+    public async Task<bool> Remove(int tradeId)
     {
+        var trade = await _context.TradeSlots.FirstOrDefaultAsync(x => x.Id == tradeId);
+        if (trade == null)
+        {
+            throw new Exception("Trade not found");
+        }
+        _context.TradeSlots.Remove(trade);
         return true;
     }
 
-    public async Task<bool> Complete(int userId, int tradeId)
+    public async Task<bool> Pull(int userId, int tradeId)
     {
         var user = _context.Users
             .Include(x => x.Inventory)
@@ -75,7 +59,7 @@ public class TradeRepository : ITradeRepository
         return false;
     }
 
-    public async Task<IQueryable<TradeItemDTO>> Get()
+    public async Task<IQueryable<TradeItemDTO>> GetAll()
     {
         var items = _context.TradeSlots
             .Include(s => s.User)
@@ -89,5 +73,12 @@ public class TradeRepository : ITradeRepository
             });
         
         return items;
+    }
+
+    public Task<TradeSlot?> GetByIdAsync(int tradeId)
+    {
+        return _context.TradeSlots
+            .Include(x=> x.Item)
+            .FirstOrDefaultAsync(i => i.Id == tradeId);
     }
 }

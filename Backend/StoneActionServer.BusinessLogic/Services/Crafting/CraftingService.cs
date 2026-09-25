@@ -1,6 +1,7 @@
 using System.Text.Json;
 using StoneActionServer.BusinessLogic.Models.Crafting;
 using StoneActionServer.BusinessLogic.Models.Modifiers;
+using StoneActionServer.DAL;
 using StoneActionServer.DAL.DTO;
 using StoneActionServer.DAL.Models.Modifiers;
 using StoneActionServer.DAL.Repositories;
@@ -14,70 +15,129 @@ namespace StoneActionServer.BusinessLogic.Services
         private readonly ICraftingRepository _craftingRepository;
         private readonly IModifierRepository _modifierRepository;
         private readonly IEnumerable<IModifierCalculator> _calculators;
+        private readonly IInventoryService _inventoryService;
+        private readonly IUnitOfWork _unitOfWork;
         
         public CraftingService(ICraftingRepository craftingRepository,
             IModifierRepository modifierRepository,
-            IEnumerable<IModifierCalculator> calculators)
+            IEnumerable<IModifierCalculator> calculators,
+            IInventoryService inventoryService,
+            IUnitOfWork unitOfWork)
         {
             _calculators = calculators;
             _craftingRepository = craftingRepository;
             _modifierRepository = modifierRepository;
+            _inventoryService = inventoryService;
+            _unitOfWork = unitOfWork;
+        }
+        
+        public async Task<bool> CanCraftRecipe(int userId, Dictionary<int,int> requiredItems)
+        {
+            var items = await _inventoryService.GetUserItemsAsync(userId);
+            if (items == null)
+            {
+                throw new InvalidOperationException($"Инвентарь пользователя не найден.");
+            }
+
+            bool canCraft = requiredItems.All(requiredItem => 
+                items.Any(userItem => 
+                    userItem.Id == requiredItem.Key && 
+                    userItem.Quantity >= requiredItem.Value)
+            );
+
+            return canCraft;
+
+        }
+        
+        public async Task<bool> TryConsumeMaterials(int userId, Dictionary<int,int> requiredItems)
+        {
+            var userItems = await _inventoryService.GetUserItemsAsync(userId);
+            
+            if (userItems == null)
+            {
+                throw new Exception("Инвентарь не найден");
+            }
+            
+            bool canCraft = requiredItems.All(requiredItem => 
+                userItems.Any(userItem => 
+                    userItem.Id == requiredItem.Key && 
+                    userItem.Quantity >= requiredItem.Value)
+            );
+
+            if (!canCraft)
+            {
+                return false;
+            }
+
+            foreach (var req in requiredItems)
+            {
+                await _inventoryService.RemoveItem(userId, req.Key, req.Value);
+            }
+
+            await _unitOfWork.SaveChangesAsync();
+            return true;
+        }
+        
+        private async Task<CraftingContext?> PrepareCraftingContextAsync(
+            int userId,
+            int craftingRecipeId)
+        {
+            var recipe = await _craftingRepository
+                .GetCraftingRecipeAsync(craftingRecipeId);
+
+            if (recipe == null)
+                return null;
+
+            var context = new CraftingContext
+            {
+                UserId = userId,
+                RecipeId = craftingRecipeId,
+                ChanceOfSuccess = recipe.ChanceOfSuccess,
+                ResultItemId = recipe.ResultItemId,
+                ResultQuantity = recipe.ResultQuantity,
+                BaseRequiredMaterials = recipe.RequiredItems
+                    .ToDictionary(x => x.ItemId, x => x.Quantity),
+                FinalRequiredMaterials = recipe.RequiredItems
+                    .ToDictionary(x => x.ItemId, x => x.Quantity)
+            };
+
+            var activeModifiers = await _modifierRepository
+                .GetActiveModifiersAsync(userId, craftingRecipeId);
+
+            foreach (var modifier in activeModifiers)
+            {
+                var calculator = _calculators
+                    .FirstOrDefault(x => x.CanHandle(modifier.ModifierType));
+
+                if (calculator == null)
+                    continue;
+
+                var typedParams = GetTypedParameters(modifier);
+                calculator.Apply(context, typedParams);
+            }
+
+            return context;
         }
 
         public async Task<bool> PerformCrafting(int userId, int craftingRecipeId)
         {
             try
             {
-                var canCraft = await _craftingRepository.CanCraftRecipe(userId, craftingRecipeId);
-                if (!canCraft)
-                {
+                var craftingContext = await PrepareCraftingContextAsync(userId, craftingRecipeId);
+                if (craftingContext == null)
                     return false;
-                }
                 
-                var recipes = await _craftingRepository.GetRecipes();
-                var recipe = recipes.FirstOrDefault(x => x.Id == craftingRecipeId);
-                if (recipe == null)
+                var isConsume =  await TryConsumeMaterials(userId, craftingContext.FinalRequiredMaterials);
+                
+                if (!isConsume)
                     return false;
-    
-                var craftingContext = new CraftingContext
-                {
-                    UserId = userId,
-                    RecipeId = craftingRecipeId,
-                    ChanceOfSuccess = recipe.ChanceOfSuccess,
-                    ResultItemId = recipe.ResultItemId,
-                    ResultQuantity = recipe.ResultQuantity,
-                    BaseRequiredMaterials = recipe.RequiredItems.ToDictionary(m => m.ItemId, m => m.Quantity),
-                    FinalRequiredMaterials = recipe.RequiredItems.ToDictionary(m => m.ItemId, m => m.Quantity)
-                };
-
-                var activeModifiers = await _modifierRepository.GetActiveModifiersAsync(userId, craftingRecipeId);
-                
-                foreach (var modifier in activeModifiers)
-                {
-                    try
-                    {
-                        var calculator = _calculators.FirstOrDefault(c => c.CanHandle(modifier.ModifierType));
-                        if (calculator != null)
-                        {
-                            var typedParams = GetTypedParameters(modifier);
-                            calculator.Apply(craftingContext, typedParams);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        return false;
-                    }
-                }
                 
                 var chance = Random.Shared.NextDouble();
                 if (craftingContext.ChanceOfSuccess < chance)
                 {
-                    // При провале всё равно списываем материалы
-                    var consumed = await _craftingRepository.ConsumeMaterials(userId, craftingRecipeId);
-                    return false; // Возвращаем true, если материалы списаны
+                    return false; 
                 }
                 
-                var isConsume =  await _craftingRepository.ConsumeMaterials(userId, craftingRecipeId);
                 if (!isConsume)
                 {
                     return false;
@@ -89,8 +149,7 @@ namespace StoneActionServer.BusinessLogic.Services
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                return false;
+                throw;
             }
 
         }
@@ -122,9 +181,9 @@ namespace StoneActionServer.BusinessLogic.Services
             return null;
         }
 
-        public async Task<List<CraftingRecipeDTO>> GetRecipes()
+        public async Task<List<CraftingRecipeDTO>> GetAllRecipesAsync()
         {
-            return await _craftingRepository.GetRecipes();
+            return await _craftingRepository.GetAllRecipesAsync();
         }
     }
 }

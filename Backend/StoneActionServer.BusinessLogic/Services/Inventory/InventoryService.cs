@@ -1,4 +1,5 @@
 ﻿using StoneActionServer.DAL.DTO;
+using StoneActionServer.DAL.Models;
 using StoneActionServer.DAL.Repositories;
 
 namespace StoneActionServer.BusinessLogic.Services;
@@ -6,62 +7,95 @@ namespace StoneActionServer.BusinessLogic.Services;
 public class InventoryService : IInventoryService
 {
     private readonly IInventoryRepository _inventoryRepository;
+    private readonly IUserRepository _userRepository;
     
-    public InventoryService(IInventoryRepository inventoryRepository)
+    public InventoryService(IInventoryRepository inventoryRepository,IUserRepository userRepository)
     {
         _inventoryRepository = inventoryRepository;
+        _userRepository = userRepository;
     }
     
-    public int GetCoins(int userId)
+    public async Task<int?> GetCoinsByUserId(int userId)
     {
-        return _inventoryRepository.GetCoins(userId);
+        return await _inventoryRepository.GetCoinsByUserId(userId);
     }
 
-    public UserMainDTO GetUserData(int userId)
+    public async Task<UserMainDTO> GetUserData(int userId)
     {
-        var inventory = _inventoryRepository.GetByUserId(userId).FirstOrDefault();
+        var inventory = await _inventoryRepository.GetWithSlotsByUserIdAsync(userId);
         if (inventory == null)
         {
             throw new Exception("Inventory not found");
         }
         var coins = inventory.Coins;
-        var name = _context.Users.FirstOrDefault(u => u.Id == userId).UserName;
+        var user = await _userRepository.GetByIdAsync(userId);
+        if (user == null)
+        {
+            throw new Exception("User not found");
+        }
         var dto = new UserMainDTO
         {
-            Name = name,
+            Name = user.UserName,
             Coins = coins
         };
         return dto;
-        return _inventoryRepository.GetUserData(userId);
     }
 
-    public IQueryable<UserInventoryItemDTO> GetUserInventoryItems(int userId)
+    public async Task<List<UserInventoryItemDTO>> GetUserItemsAsync(int userId)
     {
-        return _inventoryRepository.GetUserInventoryItems(userId);
+        return await _inventoryRepository.GetUserItemsAsync(userId);
     }
 
     public async Task<bool> GainCoins(int userId, int coins)
     {
-        return await _inventoryRepository.GainCoins(userId, coins);
+        var inventory = await _inventoryRepository.GetByUserIdAsync(userId);
+        if (inventory == null)
+        {
+            throw new Exception("Inventory not found");
+        }
+        inventory.Coins += coins;
+        await  _inventoryRepository.SaveChangesAsync();
+        return true;
     }
 
     public async Task<bool> SpendCoins(int userId, int coins)
     {
-        return await _inventoryRepository.SpendCoins(userId, coins);
+        var inventory = await _inventoryRepository.GetByUserIdAsync(userId);
+        if (inventory == null)
+        {
+            throw new Exception("Inventory not found");
+        }
+
+        inventory.Coins -= coins;
+        await _inventoryRepository.SaveChangesAsync();
+        return true;
     }
 
-    public async Task<bool> BuyItem(int userId, int itemId)
-    {
-        return await _inventoryRepository.BuyItem(userId, itemId);
-    }
-
-    public async Task<bool> SellItem(int userId, int itemId)
-    {
-        return await _inventoryRepository.SellItem(userId, itemId);
-    }
-    
     public async Task<bool> AddSupply(int userId)
     {
-        return await _inventoryRepository.AddSupply(userId);
+        // itemid = 1 Stone
+        try
+        {
+            _inventoryRepository.AddItemToInventory(userId,1,1);
+
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return false;
+        }
+        return true;
     }
+
+    public Task AddItemToInventory(int userId, int itemId, int count)
+    {
+        return _inventoryRepository.AddItemToInventory(userId, itemId, count);
+    }
+
+    public Task<bool> RemoveItem(int userId, int itemId, int count)
+    {
+        return _inventoryRepository.RemoveItem(userId, itemId, count);
+    }
+
+    
 }

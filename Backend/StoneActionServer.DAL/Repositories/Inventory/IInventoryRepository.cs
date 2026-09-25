@@ -5,13 +5,12 @@ namespace StoneActionServer.DAL.Repositories;
 
 public interface IInventoryRepository
 {
-    public int GetCoins(int userId);
-    public IQueryable<Inventory> GetByUserId(int userId);
-    public UserMainDTO GetUserData(int userId);
-    public IQueryable<UserInventoryItemDTO> GetUserInventoryItems(int userId);
-    public Task<bool> GainCoins(int userId, int coins);
-    public Task<bool> SpendCoins(int userId, int coins);
-    public Task<bool> BuyItem(int userId, int itemId);
-    public Task<bool> SellItem(int userId, int itemId);
-    public Task<bool> AddSupply(int userId);
+    public Task<int?> GetCoinsByUserId(int userId);
+    public Task<Inventory?> GetWithSlotsByUserIdAsync(int userId);
+    public Task<Inventory?> GetByUserIdAsync(int userId);
+    public Task<Models.Item?> GetItemById(int id);
+    public Task AddItemToInventory(int userId, int itemId,int count);
+    public Task<List<UserInventoryItemDTO>>  GetUserItemsAsync(int userId);
+    public Task<bool> RemoveItem(int userId, int itemId, int count);
+    public Task SaveChangesAsync();
 }

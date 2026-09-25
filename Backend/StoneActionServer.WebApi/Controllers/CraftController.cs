@@ -44,7 +44,7 @@ namespace StoneActionServer.WebApi.Controllers
         [HttpGet("recipes")]
         public async Task<IActionResult> GetRecipes()
         {
-            var data = await _craftingService.GetRecipes();
+            var data = await _craftingService.GetAllRecipesAsync();
             return Ok(data);
         }
     }

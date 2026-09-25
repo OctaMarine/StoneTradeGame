@@ -22,7 +22,7 @@ public class InventoryController : BaseApiController
     [HttpGet("userdata")]
     public async Task<IActionResult> GetUserData()
     {
-        var dto = _inventoryService.GetUserData(UserId);
+        var dto = await _inventoryService.GetUserData(UserId);
         return Ok(dto);
     }
     
@@ -38,8 +38,12 @@ public class InventoryController : BaseApiController
     public async Task<IActionResult> GetUserCoins()
     {
         
-        var coins = _inventoryService.GetCoins(UserId);
-        return Ok(coins);
+        var coins = await _inventoryService.GetCoinsByUserId(UserId);
+        if (!coins.HasValue)
+        {
+            return BadRequest("Not found coins");
+        }
+        return Ok(coins.Value);
     }
     
     [Authorize]
@@ -57,28 +61,12 @@ public class InventoryController : BaseApiController
         await _inventoryService.SpendCoins(UserId, coins);
         return Ok();
     }
-    
-    [Authorize]
-    [HttpPost("buyitem")]
-    public async Task<IActionResult> BuyItem([FromForm] int itemId)
-    {
-        await _inventoryService.BuyItem(UserId, itemId);
-        return Ok();
-    }
-    
-    [Authorize]
-    [HttpPost("sellitem")]
-    public async Task<IActionResult> SellItem([FromForm] int itemId)
-    {
-        await _inventoryService.SellItem(UserId, itemId);
-        return Ok();
-    }
-    
+
     [Authorize]
     [HttpGet("userinventoryitems")]
     public async Task<IActionResult> GetUserInventoryItems()
     {
-        var dto = _inventoryService.GetUserInventoryItems(UserId).ToList();
+        var dto = await _inventoryService.GetUserItemsAsync(UserId);
         return Ok(dto);
     }
     

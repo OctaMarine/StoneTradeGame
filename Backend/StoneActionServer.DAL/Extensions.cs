@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StoneActionServer.DAL.Repositories;
+using StoneActionServer.DAL.Repositories.Item;
 using StoneActionServer.DAL.Repositories.Leveling;
 using StoneActionServer.DAL.Repositories.Modifiers;
 
@@ -21,11 +22,14 @@ public static class Extensions
             options.UseSnakeCaseNamingConvention();
         });
         serviceCollection.AddScoped<IAuthRepository,AuthRepository>();
+        serviceCollection.AddScoped<IItemRepository,ItemRepository>();
         serviceCollection.AddScoped<IInventoryRepository,InventoryRepository>();
         serviceCollection.AddScoped<ITradeRepository,TradeRepository>();
         serviceCollection.AddScoped<ICraftingRepository,CraftingRepository>();
         serviceCollection.AddScoped<ILevelingRepository,LevelingRepository>();
         serviceCollection.AddScoped<IModifierRepository,ModifierRepository>();
+        serviceCollection.AddScoped<IUserRepository,UserRepository>();
+        serviceCollection.AddScoped<IUnitOfWork,UnitOfWork>();
         return serviceCollection;
     }
 }

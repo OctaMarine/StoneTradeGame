@@ -27,7 +27,6 @@ public class LevelingRepository : ILevelingRepository
 
         var skillIds = userSkills.Select(us => us.SkillId).ToList();
         
-        // Загружаем все необходимые поля из таблицы skill
         var skills = await _context.Skills
             .AsNoTracking()
             .Where(s => skillIds.Contains(s.Id))
@@ -58,75 +57,35 @@ public class LevelingRepository : ILevelingRepository
         return result;
     }
 
-    public async Task<bool> UpgradeSkillAsync(int userId, int skillId)
+    public async Task SaveChangesAsync()
     {
-        await using var transaction = await _context.Database.BeginTransactionAsync();
-
-        try
+        await _context.SaveChangesAsync();
+    }
+    
+    public async Task<Skill?> GetSkillByIdAsync(int skillId,bool noTracking = false)
+    {
+        if (noTracking)
         {
-            var skill = await _context.Skills.AsNoTracking().FirstOrDefaultAsync(s => s.Id == skillId);
-            if (skill == null) return false;
-
-            var userSkill = await _context.UserSkills
-                .FirstOrDefaultAsync(u => u.UserId == userId && u.SkillId == skillId);
-
-            if (userSkill == null || !userSkill.IsAvailable || userSkill.Progress < 1f)
-            {
-                return false; // Нельзя прокачать, если нет 100% прогресса или навык недоступен
-            }
-
-            if (skill.ParentSkillId.HasValue)
-            {
-                var parentUserSkill = await _context.UserSkills
-                    .FirstOrDefaultAsync(u => u.UserId == userId && u.SkillId == skill.ParentSkillId.Value);
-
-                if (parentUserSkill == null || parentUserSkill.CurrentLevel < 1)
-                {
-                    return false;
-                }
-            }
-
-            userSkill.CurrentLevel += 1;
-            userSkill.Progress = 0f; // Сбрасываем прогресс для следующего уровня (или оставь 100, если логика другая)
-            userSkill.IsAvailable = false; // Блокируем до набора новых 100%
-            
-            _context.Set<UserSkill>().Update(userSkill);
-            await _context.SaveChangesAsync();
-            await transaction.CommitAsync();
-
-            return true;
+            return await _context.Skills
+                .FirstOrDefaultAsync(s => s.Id == skillId);
         }
-        catch
+        else
         {
-            await transaction.RollbackAsync();
-            throw;
+            return await _context.Skills
+                .AsNoTracking() 
+                .FirstOrDefaultAsync(s => s.Id == skillId);   
         }
     }
-
-    public async Task<bool> AddProgressSkillAsync(int userId, int craftRecipeId)
+    
+    public async Task<UserSkill?> GetUserSkillAsync(int userId, int skillId)
     {
-        SkillCraftRecipe skillCraftRecipe;
-        try
-        {
-            skillCraftRecipe = await _context.SkillCraftRecipes
-                .FirstOrDefaultAsync(x => x.CraftRecipeId == craftRecipeId);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
-
-        var userSkill = await _context.UserSkills
-            .FirstOrDefaultAsync(u => u.UserId == userId && u.SkillId == skillCraftRecipe.SkillId);
-
-        userSkill.Progress += skillCraftRecipe.LevelProgressReward;
-        if (userSkill.Progress >= 100f)
-        {
-            userSkill.Progress = 100f;
-        }
-
-        await _context.SaveChangesAsync();
-        return true;
+        return await _context.UserSkills
+            .FirstOrDefaultAsync(u => u.UserId == userId && u.SkillId == skillId);
+    }
+    
+    public async Task<SkillCraftRecipe?> GetSkillCraftRecipeByIdAsync(int craftRecipeId)
+    {
+        return await _context.SkillCraftRecipes
+            .FirstOrDefaultAsync(x => x.CraftRecipeId == craftRecipeId);
     }
 }

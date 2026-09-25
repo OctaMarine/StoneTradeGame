@@ -10,18 +10,18 @@ namespace StoneActionServer.WebApi.Controllers;
 [Route("api/v1/trade")]
 public class TradeController : BaseApiController
 {
-    private ITradeRepository _tradeRepository;
+    private ITradeService _tradeService;
 
-    public TradeController(ITradeRepository tradeRepository,ICurrentUserService currentUserService) : base(currentUserService)
+    public TradeController(ITradeService tradeService,ICurrentUserService currentUserService) : base(currentUserService)
     {
-        _tradeRepository = tradeRepository;
+        _tradeService = tradeService;
     }
     
     [Authorize]
     [HttpPost("settrade")]
     public async Task<IActionResult> SetTrade([FromForm] int itemId, [FromForm] int price)
     {
-        var (success,id) = await _tradeRepository.Set(UserId, itemId, price);
+        var id = await _tradeService.Put(UserId, itemId, price);
         return Ok(id);
     }
     
@@ -29,7 +29,7 @@ public class TradeController : BaseApiController
     [HttpPost("buytrade")]
     public async Task<IActionResult> BuyTrade([FromBody] TradeItemRequestDTO trade)
     {
-        await _tradeRepository.Complete(UserId, trade.TradeId);
+        await _tradeService.Pull(UserId, trade.TradeId);
         return Ok();
     }
     
@@ -37,7 +37,7 @@ public class TradeController : BaseApiController
     [HttpGet("getalltrade")]
     public async Task<IActionResult> GetAllTrade()
     {
-        var data = await _tradeRepository.Get();
+        var data = await _tradeService.GetAll();
        var dataList = data.ToList();
        return Ok(dataList);
     }

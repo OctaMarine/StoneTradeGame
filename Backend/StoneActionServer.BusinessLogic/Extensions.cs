@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using StoneActionServer.BusinessLogic.Models.Crafting;
 using StoneActionServer.BusinessLogic.Services;
+using StoneActionServer.BusinessLogic.Services.Player;
 using StoneActionServer.DAL.Repositories;
 
 namespace StoneActionServer.BusinessLogic;
@@ -23,6 +24,7 @@ public static class Extensions
         serviceCollection.AddScoped<ITradeService,TradeService>();
         serviceCollection.AddScoped<ICraftingService,CraftingService>();
         serviceCollection.AddScoped<ILevelingService,LevelingService>();
+        serviceCollection.AddScoped<IUserService,UserService>();
         return serviceCollection;
     }
 }

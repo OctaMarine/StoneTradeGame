@@ -1,13 +1,15 @@
 ﻿using StoneActionServer.DAL.DTO;
+using StoneActionServer.DAL.Models;
 
 namespace StoneActionServer.DAL.Repositories;
 
 public interface ITradeRepository
 {
-    public Task<(bool, int)> Set(int userId, int itemId, int price);
-    public Task<bool> Remove(int userId, int tradeId);
-    public Task<bool> Complete(int userId, int tradeId);
+    public Task<bool> Remove(int tradeId);
+    public Task<bool> Pull(int userId, int tradeId);
 
-    public Task<IQueryable<TradeItemDTO>> Get();
+    public Task<IQueryable<TradeItemDTO>> GetAll();
+    public Task AddAsync(TradeSlot tradeSlot);
+    public Task<TradeSlot?> GetByIdAsync(int tradeId);
 
 }
