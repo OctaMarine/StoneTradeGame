@@ -2,5 +2,5 @@
 
 public interface IItemRepository
 {
-    public Task<Models.Item?> GetById(int itemId);
+    public Task<Models.Item?> GetByIdAsync(int itemId);
 }

@@ -57,11 +57,6 @@ public class LevelingRepository : ILevelingRepository
         return result;
     }
 
-    public async Task SaveChangesAsync()
-    {
-        await _context.SaveChangesAsync();
-    }
-    
     public async Task<Skill?> GetSkillByIdAsync(int skillId,bool noTracking = false)
     {
         if (noTracking)

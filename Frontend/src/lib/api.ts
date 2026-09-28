@@ -32,7 +32,7 @@ export const api = {
         console.log('[DEBUG] Тело ответа:', text);
 
 const debugInfo = `[DEBUG] URL: ${url}\nStarts with /api: ${url.startsWith('/api')}`;
-alert(debugInfo); // Покажет всплывающее окно прямо на телефоне
+//alert(debugInfo); // Покажет всплывающее окно прямо на телефоне
 console.log(debugInfo);
 
         if (!response.ok) {
@@ -94,17 +94,6 @@ console.log(debugInfo);
                     return response.json();
                 });
         },
-        getTradeItems: () => {
-            return fetch(url_host+'inventory/getalltrade', {
-                credentials: 'include',
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok for /getalltrade. Status: ' + response.status);
-                    }
-                    return response.json();
-                });
-        },
         addSupply: () => {
             return fetch(url_host+'inventory/addsupply', {
                 method: 'POST',
@@ -149,6 +138,17 @@ console.log(debugInfo);
                 }
                 return response.ok;
             });
+        },
+        getTradeItems: () => {
+            return fetch(url_host+'trade/getalltrade', {
+                credentials: 'include',
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok for /getalltrade. Status: ' + response.status);
+                    }
+                    return response.json();
+                });
         }
     },
     craft: {

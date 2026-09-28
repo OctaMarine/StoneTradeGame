@@ -9,7 +9,6 @@ namespace StoneActionServer.DAL.Repositories
     public interface ILevelingRepository
     {
         Task<List<UserSkillNodeDTO>> GetUserSkillsFlatAsync(int userId);
-        Task SaveChangesAsync();
         Task<UserSkill?> GetUserSkillAsync(int userId, int skillId);
         Task<SkillCraftRecipe?> GetSkillCraftRecipeByIdAsync(int craftRecipeId);
         Task<Skill?> GetSkillByIdAsync(int skillId, bool noTracking = false);

@@ -1,4 +1,5 @@
-﻿using StoneActionServer.DAL.DTO;
+﻿using StoneActionServer.DAL;
+using StoneActionServer.DAL.DTO;
 using StoneActionServer.DAL.Models;
 using StoneActionServer.DAL.Repositories;
 
@@ -8,19 +9,22 @@ public class InventoryService : IInventoryService
 {
     private readonly IInventoryRepository _inventoryRepository;
     private readonly IUserRepository _userRepository;
+    private readonly IUnitOfWork _unitOfWork;
     
-    public InventoryService(IInventoryRepository inventoryRepository,IUserRepository userRepository)
+    public InventoryService(IInventoryRepository inventoryRepository,IUserRepository userRepository,
+        IUnitOfWork unitOfWork)
     {
         _inventoryRepository = inventoryRepository;
         _userRepository = userRepository;
+        _unitOfWork = unitOfWork;
     }
     
-    public async Task<int?> GetCoinsByUserId(int userId)
+    public async Task<int?> GetCoinsByUserIdAsync(int userId)
     {
-        return await _inventoryRepository.GetCoinsByUserId(userId);
+        return await _inventoryRepository.GetCoinsByUserIdAsync(userId);
     }
 
-    public async Task<UserMainDTO> GetUserData(int userId)
+    public async Task<UserMainDTO> GetUserDataAsync(int userId)
     {
         var inventory = await _inventoryRepository.GetWithSlotsByUserIdAsync(userId);
         if (inventory == null)
@@ -46,7 +50,7 @@ public class InventoryService : IInventoryService
         return await _inventoryRepository.GetUserItemsAsync(userId);
     }
 
-    public async Task<bool> GainCoins(int userId, int coins)
+    public async Task<bool> GainCoinsAsync(int userId, int coins)
     {
         var inventory = await _inventoryRepository.GetByUserIdAsync(userId);
         if (inventory == null)
@@ -54,11 +58,11 @@ public class InventoryService : IInventoryService
             throw new Exception("Inventory not found");
         }
         inventory.Coins += coins;
-        await  _inventoryRepository.SaveChangesAsync();
+        await  _unitOfWork.SaveChangesAsync();
         return true;
     }
 
-    public async Task<bool> SpendCoins(int userId, int coins)
+    public async Task<bool> SpendCoinsAsync(int userId, int coins)
     {
         var inventory = await _inventoryRepository.GetByUserIdAsync(userId);
         if (inventory == null)
@@ -67,17 +71,17 @@ public class InventoryService : IInventoryService
         }
 
         inventory.Coins -= coins;
-        await _inventoryRepository.SaveChangesAsync();
+        await _unitOfWork.SaveChangesAsync();
         return true;
     }
 
-    public async Task<bool> AddSupply(int userId)
+    public async Task<bool> AddSupplyAsync(int userId)
     {
         // itemid = 1 Stone
         try
         {
-            _inventoryRepository.AddItemToInventory(userId,1,1);
-
+            await _inventoryRepository.AddItemToInventoryAsync(userId,1,1);
+            await _unitOfWork.SaveChangesAsync();
         }
         catch (Exception e)
         {
@@ -87,14 +91,24 @@ public class InventoryService : IInventoryService
         return true;
     }
 
-    public Task AddItemToInventory(int userId, int itemId, int count)
+    public async Task AddItemToInventoryAsync(int userId, int itemId, int count, bool noSave = false)
     {
-        return _inventoryRepository.AddItemToInventory(userId, itemId, count);
+        await _inventoryRepository.AddItemToInventoryAsync(userId, itemId, count);
+        if (!noSave)
+        {
+            await _unitOfWork.SaveChangesAsync();
+        }
     }
 
-    public Task<bool> RemoveItem(int userId, int itemId, int count)
+    public async Task<bool> RemoveItem(int userId, int itemId, int count,bool noSave = false)
     {
-        return _inventoryRepository.RemoveItem(userId, itemId, count);
+        var result = await _inventoryRepository.RemoveItemAsync(userId, itemId, count);
+        if (!noSave)
+        {
+            await _unitOfWork.SaveChangesAsync();
+        }
+
+        return result;
     }
 
     

@@ -28,7 +28,7 @@ namespace StoneActionServer.WebApi.Controllers
                 return BadRequest("Invalid request data.");
             }
             
-            var result = await _craftingService.PerformCrafting(UserId, itemRequest.CraftingRecipeId);
+            var result = await _craftingService.PerformCraftingAsync(UserId, itemRequest.CraftingRecipeId);
             
 
             if (!result)

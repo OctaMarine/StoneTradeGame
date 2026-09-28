@@ -11,8 +11,8 @@ public class ItemRepository : IItemRepository
         _context = context;
     }
 
-    public Task<Models.Item?> GetById(int itemId)
+    public async Task<Models.Item?> GetByIdAsync(int itemId)
     {
-        return _context.Items.FirstOrDefaultAsync(i => i.Id == itemId);
+        return await _context.Items.FirstOrDefaultAsync(i => i.Id == itemId);
     }
 }

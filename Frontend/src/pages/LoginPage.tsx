@@ -26,8 +26,7 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
-
-  // --- JSX ЗНАЧИТЕЛЬНО УПРОЩЕН ---
+  
   return (
     // Используем flex для центрирования формы на экране
     <main className="flex flex-col items-center justify-center min-h-screen">

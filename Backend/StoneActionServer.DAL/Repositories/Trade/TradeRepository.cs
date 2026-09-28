@@ -20,7 +20,7 @@ public class TradeRepository : ITradeRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<bool> Remove(int tradeId)
+    public async Task<bool> RemoveAsync(int tradeId)
     {
         var trade = await _context.TradeSlots.FirstOrDefaultAsync(x => x.Id == tradeId);
         if (trade == null)
@@ -31,37 +31,9 @@ public class TradeRepository : ITradeRepository
         return true;
     }
 
-    public async Task<bool> Pull(int userId, int tradeId)
+    public async Task<List<TradeItemDTO>> GetAllAsync()
     {
-        var user = _context.Users
-            .Include(x => x.Inventory)
-            .FirstOrDefault(i => i.Id == userId);
-        var trade = _context.TradeSlots
-            .Include(x=> x.Item)
-            .FirstOrDefault(i => i.Id == tradeId);
-
-        if (user.Inventory.Coins >= trade.Price)
-        {
-            _context.TradeSlots.Remove(trade);
-            user.Inventory.Coins -= trade.Price;
-
-            var slot = new SlotInventory
-            {
-                Quantity = 1,
-                Inventory = user.Inventory,
-                Item = trade.Item
-            };
-            await _context.Slots.AddAsync(slot);
-            await _context.SaveChangesAsync();
-            return true;
-        }
-
-        return false;
-    }
-
-    public async Task<IQueryable<TradeItemDTO>> GetAll()
-    {
-        var items = _context.TradeSlots
+        return await _context.TradeSlots
             .Include(s => s.User)
             .Include(s => s.Item)
             .Select(s => new TradeItemDTO
@@ -70,9 +42,8 @@ public class TradeRepository : ITradeRepository
                 ItemId = s.Item.Id,
                 Price = s.Price,
                 Seller = s.User.UserName
-            });
-        
-        return items;
+            })
+            .ToListAsync();
     }
 
     public Task<TradeSlot?> GetByIdAsync(int tradeId)

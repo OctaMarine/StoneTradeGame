@@ -9,7 +9,8 @@ type PanelType = 'inventory' | 'trade' | 'craft';
 
 // Интерфейс для элемента инвентаря с сервера
 interface InventoryItemDTO {
-    id: number;
+    slotId: number;
+    itemId: number;
     quantity: number;
 }
 
@@ -54,7 +55,7 @@ const Panel: React.FC<PanelProps> = ({ onRefreshUserData ,onRefreshInventory}) =
 
     const fetchTrade = useCallback(async () => {
         try {
-            const data: TradeItemDTO[] = await api.inventory.getTradeItems();
+            const data: TradeItemDTO[] = await api.trade.getTradeItems();
             setTradeItems(data || []);
         } catch (err) {
             console.error('Failed to fetch trade:', err);
@@ -101,7 +102,7 @@ const Panel: React.FC<PanelProps> = ({ onRefreshUserData ,onRefreshInventory}) =
         if (!selectedItem || sellPrice <= 0) return;
 
         try {
-            await api.trade.setTrade(selectedItem.id, sellPrice);
+            await api.trade.setTrade(selectedItem.itemId, sellPrice);
             setIsSellModalOpen(false);
             setSelectedItem(null);
             fetchInventory(); // Refresh inventory after selling
@@ -169,9 +170,9 @@ const Panel: React.FC<PanelProps> = ({ onRefreshUserData ,onRefreshInventory}) =
                 {activePanel === 'inventory' && (
                     <div className="inventory-list">
                         {inventoryItems.map((item, index) => {
-                            const metadata = getItemMetadata(item.id);
+                            const metadata = getItemMetadata(item.itemId);
                             return (
-                                <div key={`${item.id}-${index}`} className="inventory-row">
+                                <div key={`${item.itemId}-${index}`} className="inventory-row">
                                     <img
                                         src={metadata.icon}
                                         alt={metadata.name}
@@ -251,7 +252,7 @@ const Panel: React.FC<PanelProps> = ({ onRefreshUserData ,onRefreshInventory}) =
             {isSellModalOpen && selectedItem && (
                 <div className="modal-overlay">
                     <div className="modal-content">
-                        <h3>Sell {getItemMetadata(selectedItem.id).name}</h3>
+                        <h3>Sell {getItemMetadata(selectedItem.itemId).name}</h3>
                         <p>Enter price (gold):</p>
                         <input 
                             type="number" 

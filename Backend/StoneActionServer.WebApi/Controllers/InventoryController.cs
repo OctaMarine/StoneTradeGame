@@ -22,14 +22,15 @@ public class InventoryController : BaseApiController
     [HttpGet("userdata")]
     public async Task<IActionResult> GetUserData()
     {
-        var dto = await _inventoryService.GetUserData(UserId);
+        var dto = await _inventoryService.GetUserDataAsync(UserId);
         return Ok(dto);
     }
     
+    // test method
     [HttpGet("users")]
     public async Task<IActionResult> GetUsers()
     {
-        var result = await _authService.GetAllUsers();
+        var result = await _authService.GetAllUsersAsync();
         return Ok(result.ToArray().Length);
     }
     
@@ -38,7 +39,7 @@ public class InventoryController : BaseApiController
     public async Task<IActionResult> GetUserCoins()
     {
         
-        var coins = await _inventoryService.GetCoinsByUserId(UserId);
+        var coins = await _inventoryService.GetCoinsByUserIdAsync(UserId);
         if (!coins.HasValue)
         {
             return BadRequest("Not found coins");
@@ -50,7 +51,7 @@ public class InventoryController : BaseApiController
     [HttpPost("gaincoins")]
     public async Task<IActionResult> GainUserCoins([FromForm] int coins)
     {
-        await _inventoryService.GainCoins(UserId,coins);
+        await _inventoryService.GainCoinsAsync(UserId,coins);
         return Ok();
     }
     
@@ -58,7 +59,7 @@ public class InventoryController : BaseApiController
     [HttpPost("spendcoins")]
     public async Task<IActionResult> SpendUserCoins([FromForm] int coins)
     {
-        await _inventoryService.SpendCoins(UserId, coins);
+        await _inventoryService.SpendCoinsAsync(UserId, coins);
         return Ok();
     }
 
@@ -74,7 +75,7 @@ public class InventoryController : BaseApiController
     [HttpPost("addsupply")]
     public async Task<IActionResult> AddSupply()
     {
-        await _inventoryService.AddSupply(UserId);
+        await _inventoryService.AddSupplyAsync(UserId);
         return Ok();
     }
 }

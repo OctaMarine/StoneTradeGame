@@ -1,4 +1,5 @@
-﻿using StoneActionServer.DAL.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using StoneActionServer.DAL.Models;
 
 namespace StoneActionServer.DAL.Repositories;
 
@@ -11,19 +12,20 @@ public class AuthRepository : IAuthRepository
         _context = context;
     }
     
-    public async Task Add(User user, CancellationToken cancellationToken = default)
+    public async Task AddAsync(User user, CancellationToken cancellationToken = default)
     {
         await _context.Users.AddAsync(user,cancellationToken);
-        await _context.SaveChangesAsync(cancellationToken);
     }
     
-    public async Task<User> GetByUserName(string userName)
+    public async Task<User?> GetByUserNameAsync(string userName)
     {
-        return _context.Users.FirstOrDefault(x => x.UserName == userName);
+        return await _context.Users.FirstOrDefaultAsync(x => x.UserName == userName);
     }
 
-    public List<User> GetAllUsers()
+    public async Task<List<User>> GetAllUsersAsync()
     {
-        return _context.Users.ToList();
+        return await _context.Users
+            .AsNoTracking()
+            .ToListAsync();
     }
 }

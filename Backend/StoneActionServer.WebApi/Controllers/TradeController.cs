@@ -21,7 +21,7 @@ public class TradeController : BaseApiController
     [HttpPost("settrade")]
     public async Task<IActionResult> SetTrade([FromForm] int itemId, [FromForm] int price)
     {
-        var id = await _tradeService.Put(UserId, itemId, price);
+        var id = await _tradeService.PutAsync(UserId, itemId, price);
         return Ok(id);
     }
     
@@ -29,7 +29,7 @@ public class TradeController : BaseApiController
     [HttpPost("buytrade")]
     public async Task<IActionResult> BuyTrade([FromBody] TradeItemRequestDTO trade)
     {
-        await _tradeService.Pull(UserId, trade.TradeId);
+        await _tradeService.PullAsync(UserId, trade.TradeId);
         return Ok();
     }
     
@@ -37,8 +37,7 @@ public class TradeController : BaseApiController
     [HttpGet("getalltrade")]
     public async Task<IActionResult> GetAllTrade()
     {
-        var data = await _tradeService.GetAll();
-       var dataList = data.ToList();
-       return Ok(dataList);
+        var data = await _tradeService.GetAllAsync();
+        return Ok(data);
     }
 }

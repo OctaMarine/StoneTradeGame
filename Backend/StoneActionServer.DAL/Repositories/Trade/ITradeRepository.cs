@@ -5,10 +5,8 @@ namespace StoneActionServer.DAL.Repositories;
 
 public interface ITradeRepository
 {
-    public Task<bool> Remove(int tradeId);
-    public Task<bool> Pull(int userId, int tradeId);
-
-    public Task<IQueryable<TradeItemDTO>> GetAll();
+    public Task<bool> RemoveAsync(int tradeId);
+    public Task<List<TradeItemDTO>> GetAllAsync();
     public Task AddAsync(TradeSlot tradeSlot);
     public Task<TradeSlot?> GetByIdAsync(int tradeId);
 

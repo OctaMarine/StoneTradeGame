@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using StoneActionServer.DAL.DTO;
 using StoneActionServer.DAL.Models;
-using StoneActionServer.DAL.Repositories.Crafting.Models;
 
 namespace StoneActionServer.DAL.Repositories
 {
@@ -19,43 +18,6 @@ namespace StoneActionServer.DAL.Repositories
             return await _context.CraftingRecipe
                 .Include(r => r.RequiredItems)
                 .FirstOrDefaultAsync(r => r.Id == craftingRecipeId);
-        }
-
-        public async Task<bool> AddCraftedItemByContext(int userId, CraftingContext context)
-        {
-            
-            var inventory = await _context.Inventories
-                .FirstOrDefaultAsync(i => i.UserId == userId);
-
-            if (context.ResultItemId == 0 || inventory == null)
-            {
-                throw new Exception("Не найден игрок или предмет");
-            }
-            var slot = new SlotInventory
-            {
-                Quantity = context.ResultQuantity,
-                Inventory = inventory,
-                ItemId = context.ResultItemId
-            };
-
-            await _context.Slots.AddAsync(slot);
-            
-            if (context.ExtraItemIds.Count > 0)
-            {
-                foreach (var contextExtraItemId in context.ExtraItemIds)
-                {
-                    var extraSlot = new SlotInventory
-                    {
-                        Quantity = 1,
-                        Inventory = inventory,
-                        ItemId = contextExtraItemId
-                    };   
-                    await _context.Slots.AddAsync(extraSlot);
-
-                }   
-            }
-            await _context.SaveChangesAsync();
-            return true;
         }
 
         public async Task<List<CraftingRecipeDTO>> GetAllRecipesAsync()

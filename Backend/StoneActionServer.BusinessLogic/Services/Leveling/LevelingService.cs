@@ -71,7 +71,7 @@ namespace StoneActionServer.BusinessLogic.Services
                 userSkill.Progress = 0f;
                 userSkill.IsAvailable = false; // Блокируем до набора новых 100%
             
-                await _levelingRepository.SaveChangesAsync();
+                await _unitOfWork.SaveChangesAsync();
                 await transaction.CommitAsync();
 
                 return true;
@@ -102,7 +102,7 @@ namespace StoneActionServer.BusinessLogic.Services
                 userSkill.Progress = 1f;
             }
 
-            await _levelingRepository.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync();
             return true;
         }
     }

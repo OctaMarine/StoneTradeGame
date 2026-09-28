@@ -13,7 +13,7 @@ public class InventoryRepository : IInventoryRepository
         _context = context;
     }
     
-    public async Task<int?> GetCoinsByUserId(int userId)
+    public async Task<int?> GetCoinsByUserIdAsync(int userId)
     {
         var coins = await _context.Inventories
             .Where(i => i.UserId == userId)
@@ -36,12 +36,25 @@ public class InventoryRepository : IInventoryRepository
         return inventory;
     }
 
-    public async Task<Models.Item?> GetItemById(int id)
+    public async Task<Models.Item?> GetItemByIdAsync(int id)
     {
         return await _context.Items.FirstOrDefaultAsync(i => i.Id == id);
     }
 
-    public async Task AddItemToInventory(int userId, int itemId,int count)
+    public async Task<List<UserInventoryItemDTO>> GetUserItemsAsync(int userId)
+    {
+        return await _context.Slots
+            .Where(s => s.Inventory.UserId == userId)
+            .Select(s => new UserInventoryItemDTO
+            {
+                SlotId = s.Id,
+                ItemId = s.ItemId,
+                Quantity = s.Quantity
+            })
+            .ToListAsync();
+    }
+    
+    public async Task AddItemToInventoryAsync(int userId, int itemId,int count)
     {
         var inventory = await _context.Inventories
             .FirstOrDefaultAsync(i => i.UserId == userId);
@@ -54,34 +67,29 @@ public class InventoryRepository : IInventoryRepository
         {
             throw new Exception("Item not found");
         }
-        var slot = new SlotInventory
+
+        var existingSlot = await _context.Slots.FirstOrDefaultAsync(x => x.InventoryId == inventory.Id && x.ItemId == itemId);
+        if (existingSlot != null)
         {
-            Quantity = 1,
-            Inventory = inventory,
-            Item = item
-        };
-
-        await _context.Slots.AddAsync(slot);
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task<List<UserInventoryItemDTO>> GetUserItemsAsync(int userId)
-    {
-        return await _context.Slots
-            .Where(s => s.Inventory.UserId == userId)
-            .Select(s => new UserInventoryItemDTO
+            existingSlot.Quantity += count;
+        }
+        else
+        {
+            var slot = new SlotInventory
             {
-                Id = s.Id,
-                Quantity = s.Quantity
-            })
-            .ToListAsync();
+                Quantity = 1,
+                Inventory = inventory,
+                ItemId = itemId
+            };  
+            await _context.Slots.AddAsync(slot);
+        }
     }
 
-    public async Task<bool> RemoveItem(int userId, int itemId, int count)
+    public async Task<bool> RemoveItemAsync(int userId, int itemId, int count)
     {
-        var inventory = _context.Inventories
+        var inventory = await _context.Inventories
             .Include(i => i.Slots)
-            .FirstOrDefault(i => i.UserId == userId);
+            .FirstOrDefaultAsync(i => i.UserId == userId);
         if (inventory == null)
         {
             throw new Exception("Inventory not found");
@@ -91,17 +99,18 @@ public class InventoryRepository : IInventoryRepository
         {
             throw new Exception("Slot not found");
         }
+        
+        if (slot.Quantity < count)
+        {
+            throw new InvalidOperationException(
+                $"Not enough items");
+        }
         slot.Quantity -= count;
 
-        if (slot.Quantity <= 0)
+        if (slot.Quantity == 0)
         {
             _context.Slots.Remove(slot); 
         }
         return true;
-    }
-    
-    public async Task SaveChangesAsync()
-    {
-        await _context.SaveChangesAsync();
     }
 }

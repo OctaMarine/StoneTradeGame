@@ -18,7 +18,7 @@ public class AuthController : BaseApiController
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromForm]string userName, [FromForm]string password, [FromForm]string email)
     {
-        var result = await _authService.Register(userName,password,email);
+        var result = await _authService.RegisterAsync(userName,password,email);
         if (!result)
         {
             return BadRequest();
@@ -34,7 +34,7 @@ public class AuthController : BaseApiController
             return BadRequest("Некорректные данные");
         }
 
-        var token = await _authService.Login(request.UserName, request.Password);
+        var token = await _authService.LoginAsync(request.UserName, request.Password);
     
         if (string.IsNullOrEmpty(token))
         {

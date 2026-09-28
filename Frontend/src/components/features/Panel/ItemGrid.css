@@ -51,7 +51,7 @@
     grid-row: 1;
     
     font-weight: bold;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     color: #ffffff;
     text-align: left; /* Выравниваем по левому краю для читаемости */
     white-space: nowrap;
@@ -160,8 +160,8 @@
     white-space: nowrap;
 }
 .craft-row .craft-time {
-    grid-column: 3;
-    grid-row: 1;
+    grid-column: 2;
+    grid-row: 2;
     
     font-size: 0.75rem;
     color: #bdc3c7;
@@ -187,6 +187,8 @@
     
     display: flex;
     flex-wrap: wrap;
+    margin-right: 80px;
+    margin-left: 10px;
     gap: 6px;
     background: rgba(0, 0, 0, 0.3);
     padding: 8px;

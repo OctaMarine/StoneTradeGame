@@ -9,8 +9,8 @@ public interface IUserService
     public Task<User?> GetByIdAsync(int userId);
     
     public Task<User?> GetByUserNameAsync(string userName);
-    
-    public List<User> GetAllUsers();
+
+    public Task<List<User>> GetAllUsers();
     
     public Task UpdateAsync(User user);
     

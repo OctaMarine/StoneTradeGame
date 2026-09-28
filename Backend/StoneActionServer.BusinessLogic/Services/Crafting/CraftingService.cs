@@ -3,6 +3,7 @@ using StoneActionServer.BusinessLogic.Models.Crafting;
 using StoneActionServer.BusinessLogic.Models.Modifiers;
 using StoneActionServer.DAL;
 using StoneActionServer.DAL.DTO;
+using StoneActionServer.DAL.Models;
 using StoneActionServer.DAL.Models.Modifiers;
 using StoneActionServer.DAL.Repositories;
 using StoneActionServer.DAL.Repositories.Crafting.Models;
@@ -31,7 +32,8 @@ namespace StoneActionServer.BusinessLogic.Services
             _unitOfWork = unitOfWork;
         }
         
-        public async Task<bool> CanCraftRecipe(int userId, Dictionary<int,int> requiredItems)
+        
+        public async Task<bool> CanCraftRecipeAsync(int userId, Dictionary<int,int> requiredItems)
         {
             var items = await _inventoryService.GetUserItemsAsync(userId);
             if (items == null)
@@ -41,7 +43,7 @@ namespace StoneActionServer.BusinessLogic.Services
 
             bool canCraft = requiredItems.All(requiredItem => 
                 items.Any(userItem => 
-                    userItem.Id == requiredItem.Key && 
+                    userItem.ItemId == requiredItem.Key && 
                     userItem.Quantity >= requiredItem.Value)
             );
 
@@ -49,7 +51,7 @@ namespace StoneActionServer.BusinessLogic.Services
 
         }
         
-        public async Task<bool> TryConsumeMaterials(int userId, Dictionary<int,int> requiredItems)
+        public async Task<bool> TryConsumeMaterialsAsync(int userId, Dictionary<int,int> requiredItems)
         {
             var userItems = await _inventoryService.GetUserItemsAsync(userId);
             
@@ -60,7 +62,7 @@ namespace StoneActionServer.BusinessLogic.Services
             
             bool canCraft = requiredItems.All(requiredItem => 
                 userItems.Any(userItem => 
-                    userItem.Id == requiredItem.Key && 
+                    userItem.ItemId == requiredItem.Key && 
                     userItem.Quantity >= requiredItem.Value)
             );
 
@@ -71,7 +73,7 @@ namespace StoneActionServer.BusinessLogic.Services
 
             foreach (var req in requiredItems)
             {
-                await _inventoryService.RemoveItem(userId, req.Key, req.Value);
+                await _inventoryService.RemoveItem(userId, req.Key, req.Value,true);
             }
 
             await _unitOfWork.SaveChangesAsync();
@@ -119,15 +121,16 @@ namespace StoneActionServer.BusinessLogic.Services
             return context;
         }
 
-        public async Task<bool> PerformCrafting(int userId, int craftingRecipeId)
+        public async Task<bool> PerformCraftingAsync(int userId, int craftingRecipeId)
         {
+            await using var transaction = await _unitOfWork.BeginTransactionAsync();
             try
             {
                 var craftingContext = await PrepareCraftingContextAsync(userId, craftingRecipeId);
                 if (craftingContext == null)
                     return false;
                 
-                var isConsume =  await TryConsumeMaterials(userId, craftingContext.FinalRequiredMaterials);
+                var isConsume =  await TryConsumeMaterialsAsync(userId, craftingContext.FinalRequiredMaterials);
                 
                 if (!isConsume)
                     return false;
@@ -143,12 +146,25 @@ namespace StoneActionServer.BusinessLogic.Services
                     return false;
                 }
                 
-                await _craftingRepository.AddCraftedItemByContext(userId, craftingContext);
-    
+                await _inventoryService.AddItemToInventoryAsync(userId, craftingContext.ResultItemId,
+                    craftingContext.ResultQuantity,true);
+
+                if (craftingContext.ExtraItemIds.Count > 0)
+                {
+                    foreach (var contextExtraItemId in craftingContext.ExtraItemIds)
+                    {
+                        await _inventoryService.AddItemToInventoryAsync(userId, contextExtraItemId,
+                            1,true);
+                    }   
+                }
+
+                await _unitOfWork.SaveChangesAsync();
+                await transaction.CommitAsync();
                 return true;
             }
             catch (Exception e)
             {
+                await transaction.RollbackAsync();
                 throw;
             }
 

@@ -6,8 +6,8 @@ namespace StoneActionServer.BusinessLogic.Services
 {
     public interface ICraftingService
     {
-        public Task<bool> PerformCrafting(int userId, int craftingRecipeId);
+        public Task<bool> PerformCraftingAsync(int userId, int craftingRecipeId);
         public Task<List<CraftingRecipeDTO>> GetAllRecipesAsync();
-        Task<bool> CanCraftRecipe(int userId, Dictionary<int,int> requiredItems);
+        Task<bool> CanCraftRecipeAsync(int userId, Dictionary<int,int> requiredItems);
     }
 }

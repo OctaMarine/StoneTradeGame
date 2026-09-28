@@ -4,15 +4,15 @@ namespace StoneActionServer.DAL.Repositories;
 
 public interface IUserRepository
 {
-    public Task Add(User user);
+    public Task AddAsync(User user);
 
     public Task<User?> GetByIdAsync(int userId);
 
-    public Task<User?> GetByUserName(string userName);
+    public Task<User?> GetByUserNameAsync(string userName);
 
-    public List<User> GetAllUsers();
+    public Task<List<User>> GetAllUsersAsync();
 
-    public Task Update(User user);
+    public void Update(User user);
 
-    public Task<bool> Delete(int userId);
+    public Task<bool> DeleteAsync(int userId);
 }

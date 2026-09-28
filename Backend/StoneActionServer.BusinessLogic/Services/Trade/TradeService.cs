@@ -28,9 +28,9 @@ public class TradeService : ITradeService
         _unitOfWork = unitOfWork;
     }
     
-    public async Task<int> Put(int userId, int itemId, int price)
+    public async Task<int> PutAsync(int userId, int itemId, int price)
     {
-        var item = await _itemRepository.GetById(itemId);
+        var item = await _itemRepository.GetByIdAsync(itemId);
         if (item == null)
         {
             throw new Exception("Item not found");
@@ -50,7 +50,7 @@ public class TradeService : ITradeService
 
         try
         {
-            await _inventoryService.RemoveItem(userId, itemId,1);
+            await _inventoryService.RemoveItem(userId, itemId,1,true);
             
         }
         catch (Exception e)
@@ -65,14 +65,14 @@ public class TradeService : ITradeService
         return tradeSlot.Id;
     }
 
-    public Task<bool> Remove(int userId)
+    public async Task<bool> RemoveAsync(int userId)
     {
-        return _tradeRepository.Remove(userId);
+        return await _tradeRepository.RemoveAsync(userId);
     }
 
-    public async Task<bool> Pull(int userId, int tradeId)
+    public async Task<bool> PullAsync(int userId, int tradeId)
     {
-        var coins = await _inventoryService.GetCoinsByUserId(userId);
+        var coins = await _inventoryService.GetCoinsByUserIdAsync(userId);
         if (!coins.HasValue)
         {
             throw new Exception("Inventory not found");
@@ -84,17 +84,17 @@ public class TradeService : ITradeService
         }
         if (coins.Value >= trade.Price)
         {
-            await _tradeRepository.Remove(tradeId);
-            await _inventoryService.SpendCoins(userId, trade.Price);
-            await _inventoryService.AddItemToInventory(userId, trade.ItemId, 1);
+            await _tradeRepository.RemoveAsync(tradeId);
+            await _inventoryService.SpendCoinsAsync(userId, trade.Price);
+            await _inventoryService.AddItemToInventoryAsync(userId, trade.ItemId, 1);
             return true;
         }
 
         return false;
     }
 
-    public async Task<IQueryable<TradeItemDTO>> GetAll()
+    public async Task<List<TradeItemDTO>> GetAllAsync()
     {
-        return await _tradeRepository.GetAll();
+        return await _tradeRepository.GetAllAsync();
     }
 }

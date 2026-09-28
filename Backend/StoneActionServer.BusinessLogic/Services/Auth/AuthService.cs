@@ -10,16 +10,18 @@ public class AuthService : IAuthService
 {
     private readonly IAuthRepository _authRepository;
     private readonly JwtService _jwtService;
+    private readonly IUnitOfWork _unitOfWork;
     
-    public AuthService(IAuthRepository authRepository, JwtService jwtService)
+    public AuthService(IAuthRepository authRepository, JwtService jwtService, IUnitOfWork unitOfWork)
     {
         _authRepository = authRepository;
         _jwtService = jwtService;
+        _unitOfWork = unitOfWork;
     }
     
-    public async Task<bool> Register(string userName, string password, string email, CancellationToken cancellationToken = default)
+    public async Task<bool> RegisterAsync(string userName, string password, string email, CancellationToken cancellationToken = default)
     {
-        var existUser = await _authRepository.GetByUserName(userName);
+        var existUser = await _authRepository.GetByUserNameAsync(userName);
         if (existUser != null)
         {
             return false;
@@ -39,14 +41,15 @@ public class AuthService : IAuthService
         var pasHash = new PasswordHasher<User>().HashPassword(user, password);
         user.PasswordHash = pasHash;
 
-        await _authRepository.Add(user,cancellationToken);
+        await _authRepository.AddAsync(user,cancellationToken);
+        await _unitOfWork.SaveChangesAsync();
 
         return true;
     }
     
-    public async Task<string> Login(string userName, string password)
+    public async Task<string> LoginAsync(string userName, string password)
     {
-        var user = await _authRepository.GetByUserName(userName);
+        var user = await _authRepository.GetByUserNameAsync(userName);
         if (user == null)
         {
             return String.Empty;
@@ -63,8 +66,8 @@ public class AuthService : IAuthService
         return String.Empty;
     }
 
-    public async Task<List<User>> GetAllUsers()
+    public async Task<List<User>> GetAllUsersAsync()
     {
-        return _authRepository.GetAllUsers();
+        return await _authRepository.GetAllUsersAsync();
     }
 }

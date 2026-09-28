@@ -1,3 +1,4 @@
+using StoneActionServer.DAL;
 using StoneActionServer.DAL.DTO;
 
 namespace StoneActionServer.BusinessLogic.Services.Player;
@@ -9,15 +10,18 @@ using StoneActionServer.DAL.Repositories;
 public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public UserService(IUserRepository userRepository)
+    public UserService(IUserRepository userRepository, IUnitOfWork unitOfWork)
     {
         _userRepository = userRepository;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task AddAsync(User user)
     {
-        await _userRepository.Add(user);
+        await _userRepository.AddAsync(user);
+        await _unitOfWork.SaveChangesAsync();
     }
 
     public async Task<User?> GetByIdAsync(int userId)
@@ -27,22 +31,24 @@ public class UserService : IUserService
     
     public async Task<User?> GetByUserNameAsync(string userName)
     {
-        return await _userRepository.GetByUserName(userName);
+        return await _userRepository.GetByUserNameAsync(userName);
     }
 
-    public List<User> GetAllUsers()
+    public async Task<List<User>> GetAllUsers()
     {
-        return _userRepository.GetAllUsers();
+        return await _userRepository.GetAllUsersAsync();
     }
 
     public async Task UpdateAsync(User user)
     {
-        await _userRepository.Update(user);
+        _userRepository.Update(user);
+        await _unitOfWork.SaveChangesAsync();
     }
 
     public async Task<bool> DeleteAsync(int userId)
     {
-        var deleted = await _userRepository.Delete(userId);
-        return deleted;
+        var isDeleted = await _userRepository.DeleteAsync(userId);
+        await _unitOfWork.SaveChangesAsync();
+        return isDeleted;
     }
 }
