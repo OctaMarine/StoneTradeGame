@@ -17,7 +17,6 @@ interface RenderableNode extends UserSkillNode {
 }
 
 export function SkillTreeView({ nodes, onNodeClick }: Props) {
-  // 1. Рекурсивно сплющиваем дерево в Map для удобного доступа по ID и вычисления состояний
   const flatNodes = useMemo(() => {
     const map = new Map<number, RenderableNode>();
     
@@ -27,12 +26,12 @@ export function SkillTreeView({ nodes, onNodeClick }: Props) {
         
         if (!node.isOpen) {
           state = 'locked';
-        } else if (node.currentLevel >= (node.maxLevel ?? 10)) { // <-- SAFEGUARD: ?? 1 на случай, если maxLevel не пришел с бэка
+        } else if (node.currentLevel >= (node.maxLevel ?? 10)) {
           state = 'maxed';
         } else if (node.progress >= 1 && node.isAvailable) {
           state = 'available';
         } else if (parentState !== 'locked' || !node.parentSkillId) {
-          // Если родитель открыт (или это корневой навык), мы можем набивать прогресс
+          
           state = 'active';
         }
 
@@ -48,7 +47,6 @@ export function SkillTreeView({ nodes, onNodeClick }: Props) {
     return map;
   }, [nodes]);
 
-  // 2. Вычисляем границы холста на основе координат из БД
   const worldBounds = useMemo(() => {
     let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
     let hasCoords = false;
@@ -64,19 +62,19 @@ export function SkillTreeView({ nodes, onNodeClick }: Props) {
     });
 
     if (!hasCoords) {
-      // Fallback, если координаты еще не заполнены в БД
+
       return { width: 800, height: 600, offsetX: 0, offsetY: 0 };
     }
 
     return {
-      width: Math.max(800, (maxX - minX) + 200), // +200 дает запас по краям
+      width: Math.max(800, (maxX - minX) + 200), 
       height: Math.max(600, (maxY - minY) + 200),
-      offsetX: Math.abs(Math.min(0, minX)) + 100, // +100 сдвигает всё вправо, чтобы отрицательные координаты не обрезались
-      offsetY: Math.abs(Math.min(0, minY)) + 100  // +100 сдвигает всё вниз
+      offsetX: Math.abs(Math.min(0, minX)) + 100, 
+      offsetY: Math.abs(Math.min(0, minY)) + 100  
     };
   }, [flatNodes]);
 
-  // 3. Собираем ребра для отрисовки линий
+
   const edges = useMemo(() => {
     const result: { from: number; to: number; isActive: boolean }[] = [];
     flatNodes.forEach(node => {

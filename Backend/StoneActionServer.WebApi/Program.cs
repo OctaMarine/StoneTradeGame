@@ -1,6 +1,5 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.IdentityModel.Tokens;
 using StoneActionServer.BusinessLogic;
 using StoneActionServer.BusinessLogic.Services;
@@ -40,7 +39,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     {
         OnMessageReceived = context =>
         {
-            // Имя cookie должно быть согласовано с тем, что установлено в методе Login
             context.Token = context.Request.Cookies["accessToken"];
             return Task.CompletedTask;
         }

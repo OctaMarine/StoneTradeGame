@@ -21,7 +21,7 @@ public class AuthController : BaseApiController
         var result = await _authService.RegisterAsync(userName,password,email);
         if (!result)
         {
-            return BadRequest();
+            return BadRequest("Ошибка регистрации");
         }
         return Ok("register" +result);
     }
@@ -46,7 +46,6 @@ public class AuthController : BaseApiController
             HttpOnly = true,
             Secure = false,
             SameSite = SameSiteMode.Lax,
-            //Domain = "192.168.0.142",
             Path = "/",
             //Expires = DateTime.UtcNow.AddDays(7)
         };

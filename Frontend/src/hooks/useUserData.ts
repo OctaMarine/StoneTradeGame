@@ -15,7 +15,6 @@ export function useUserData() {
     const fetchUserData = useCallback(async () => {
         try {
             const data = await api.inventory.userData();
-            // Обновляем состояние → компонент перерисуется
             setUserData({
                 userName: data.name,
                 coins: data.coins
@@ -26,7 +25,7 @@ export function useUserData() {
     }, []);
 
     useEffect(() => {
-        fetchUserData(); // загружаем данные при первом рендере
+        fetchUserData();
     }, [fetchUserData]);
 
     return {

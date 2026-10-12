@@ -1,6 +1,4 @@
-/* ============================================
-   Leveling Page - Магический Фиолетовый
-   ============================================ */
+
 
 .leveling-page {
     min-height: 100vh;
@@ -13,11 +11,9 @@
     flex-direction: column;
     font-family: 'Inter', 'Segoe UI', sans-serif;
     
-    /* ВАЖНО: Делаем страницу "якорем" для абсолютного позиционирования кнопки */
+
     position: relative; 
 }
-
-/* Лёгкая текстура поверх фона */
 .leveling-page::before {
     content: '';
     position: absolute;
@@ -34,11 +30,6 @@
 }
 
 
-
-/* ============================================
-   Контейнер дерева навыков
-   ============================================ */
-
 .skill-tree-container {
     flex: 1;
     display: flex;
@@ -46,12 +37,10 @@
     align-items: flex-start;
     width: 100%;
     
-    /* ПРИНУДИТЕЛЬНЫЙ отступ сверху, чтобы дерево НАЧАЛОСЬ ниже кнопки */
-    /* Кнопка занимает ~44px + 2rem (32px) top = ~76px. Ставим 100px с запасом. */
     margin-top: 100px; 
 }
 
-/* Loading / Error states */
+
 .loading, .error {
     color: #c77dff;
     font-size: 1.1rem;
@@ -59,7 +48,7 @@
     padding: 3rem;
     font-family: 'Cinzel', serif;
     letter-spacing: 1px;
-    margin-top: 100px; /* Тоже сдвигаем, если будет ошибка загрузки */
+    margin-top: 100px; 
 }
 
 .error {
@@ -67,13 +56,12 @@
     text-shadow: 0 0 10px rgba(255, 107, 107, 0.4);
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     .leveling-page {
         padding: 1rem;
     }
 
     .skill-tree-container, .loading, .error {
-        margin-top: 80px; /* Чуть меньше отступ на мобильных */
+        margin-top: 80px;
     }
 }

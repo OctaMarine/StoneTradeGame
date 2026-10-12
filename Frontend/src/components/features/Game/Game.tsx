@@ -18,11 +18,11 @@ export default function Game() {
         } catch (error) {
             console.error('Ошибка при выполнении поставки:', error);
         }
-    }; // Зависимости пустые, так как функция не зависит от внешних переменных
+    }; 
 
     const handleExit = () => {
         console.log('Выход');
-    }; // Пустой массив зависимостей - эффект выполнится только один раз
+    };
 
     return (
         <div className="App">

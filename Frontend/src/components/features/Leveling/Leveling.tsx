@@ -26,11 +26,11 @@ export default function Leveling() {
     }, [fetchTree]);
 
     const handleNodeClick = async (node: UserSkillNode) => {
-        // Прокачивать можно, если прогресс 100% и навык доступен (IsAvailable = true)
+
         if (node.progress >= 1.0 && node.isAvailable) {
             try {
                 await api.leveling.upgradeSkill(node.skillId);
-                await fetchTree(); // Перезагружаем дерево для отображения нового уровня
+                await fetchTree();
             } catch (err) {
                 alert(err instanceof Error ? err.message : 'Не удалось прокачать навык');
             }

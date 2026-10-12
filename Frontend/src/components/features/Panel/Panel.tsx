@@ -4,10 +4,9 @@ import './Panel.css';
 import './ItemGrid.css';
 import { getItemMetadata } from '@/lib/itemsMetadata';
 
-// Тип для ключей панелей
+
 type PanelType = 'inventory' | 'trade' | 'craft';
 
-// Интерфейс для элемента инвентаря с сервера
 interface InventoryItemDTO {
     slotId: number;
     itemId: number;
@@ -21,25 +20,25 @@ interface TradeItemDTO {
     seller: number;
 }
 
-// Интерфейс для пропсов компонента Panel
+
 interface PanelProps {
     onRefreshUserData: () => void;
     onRefreshInventory: (refreshFn: () => void) => void;
 }
 
 const Panel: React.FC<PanelProps> = ({ onRefreshUserData ,onRefreshInventory}) => {
-    // Состояние для активной панели
+
     const [activePanel, setActivePanel] = useState<PanelType>('inventory');
     const [inventoryItems, setInventoryItems] = useState<InventoryItemDTO[]>([]);
     const [tradeItems, setTradeItems] = useState<TradeItemDTO[]>([]);
     const [craftableRecipes, setCraftableRecipes] = useState<CraftingRecipe[]>([]);
 
-    // State for Sell Modal
+
     const [isSellModalOpen, setIsSellModalOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState<InventoryItemDTO | null>(null);
     const [sellPrice, setSellPrice] = useState<number>(0);
 
-    // Обработчик клика по кнопкам
+
     const handleMenuClick = (item: PanelType) => {
         setActivePanel(item);
     };
@@ -51,7 +50,7 @@ const Panel: React.FC<PanelProps> = ({ onRefreshUserData ,onRefreshInventory}) =
         } catch (err) {
             console.error('Failed to fetch inventory:', err);
         }
-    }, []); // пустой массив - функция создается один раз
+    }, []); 
 
     const fetchTrade = useCallback(async () => {
         try {
@@ -76,7 +75,7 @@ const Panel: React.FC<PanelProps> = ({ onRefreshUserData ,onRefreshInventory}) =
         console.log('Покупка товара с ID:', itemId);
         try {
             await api.trade.buyTrade(itemId);
-            onRefreshUserData(); // Call to refresh user data (coins) and trade items
+            onRefreshUserData();
             fetchTrade();
         } catch (err) {
             console.error('Failed to fetch trade:', err);
@@ -105,8 +104,8 @@ const Panel: React.FC<PanelProps> = ({ onRefreshUserData ,onRefreshInventory}) =
             await api.trade.setTrade(selectedItem.itemId, sellPrice);
             setIsSellModalOpen(false);
             setSelectedItem(null);
-            fetchInventory(); // Refresh inventory after selling
-            onRefreshUserData(); // Call to refresh user data (coins)
+            fetchInventory(); 
+            onRefreshUserData(); 
         } catch (err) {
             console.error('Failed to set trade:', err);
         }
@@ -119,8 +118,8 @@ const Panel: React.FC<PanelProps> = ({ onRefreshUserData ,onRefreshInventory}) =
             if(res)
             {
                 alert('Предмет успешно создан!');
-                fetchInventory(); // Refresh inventory after crafting
-                onRefreshUserData(); // Refresh user data (coins/resources)
+                fetchInventory();
+                onRefreshUserData();
             }
             else
             {
@@ -143,7 +142,6 @@ const Panel: React.FC<PanelProps> = ({ onRefreshUserData ,onRefreshInventory}) =
 
     return (
         <div className="panel">
-            {/* Бар с кнопками переключения */}
             <div className="panel-tabs">
                 <button
                     className={`tab-button ${activePanel === 'inventory' ? 'active' : ''}`}
@@ -165,7 +163,6 @@ const Panel: React.FC<PanelProps> = ({ onRefreshUserData ,onRefreshInventory}) =
                 </button>
             </div>
 
-            {/* Контент панели */}
             <div className="panel-content">
                 {activePanel === 'inventory' && (
                     <div className="inventory-list">
@@ -188,7 +185,7 @@ const Panel: React.FC<PanelProps> = ({ onRefreshUserData ,onRefreshInventory}) =
                 )}
 
                 {activePanel === 'trade' && (
-                    <div className="inventory-list"> {/* Используем тот же класс для похожего стиля */}
+                    <div className="inventory-list"> 
                         {tradeItems.map((item) => {
                             const metadata = getItemMetadata(item.itemId);
                             return (

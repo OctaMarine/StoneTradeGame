@@ -27,7 +27,6 @@ export const myTree: SkillTree = {
   id: '1',
   startNodeId: 'core',
   nodes: {
-    // Главная нода сверху
     core: { 
       id: 'core', 
       x: 400, 
@@ -38,7 +37,6 @@ export const myTree: SkillTree = {
       icon: '❤️'
     },
     
-    // Левая ветвь - Сила (уходит влево-вниз)
     str1: { 
       id: 'str1', 
       x: 250, 
@@ -70,7 +68,6 @@ export const myTree: SkillTree = {
       icon: '🔥'
     },
     
-    // Центральная ветвь - Ловкость (идет прямо вниз)
     agi1: { 
       id: 'agi1', 
       x: 400, 
@@ -102,7 +99,6 @@ export const myTree: SkillTree = {
       icon: '💨'
     },
     
-    // Правая ветвь - Разум (уходит вправо-вниз)
     int1: { 
       id: 'int1', 
       x: 550, 
@@ -135,20 +131,17 @@ export const myTree: SkillTree = {
     },
   },
   edges: [
-    // Связи от core к трем ветвям
     { from: 'core', to: 'str1' },
     { from: 'core', to: 'agi1' },
     { from: 'core', to: 'int1' },
     
-    // Левая ветвь (Сила)
     { from: 'str1', to: 'str2' },
     { from: 'str2', to: 'str3' },
     
-    // Центральная ветвь (Ловкость)
+
     { from: 'agi1', to: 'agi2' },
     { from: 'agi2', to: 'agi3' },
     
-    // Правая ветвь (Разум)
     { from: 'int1', to: 'int2' },
     { from: 'int2', to: 'int3' },
   ],

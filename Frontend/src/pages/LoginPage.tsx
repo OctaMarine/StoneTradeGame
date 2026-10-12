@@ -28,10 +28,9 @@ export default function LoginPage() {
   };
   
   return (
-    // Используем flex для центрирования формы на экране
+
     <main className="flex flex-col items-center justify-center min-h-screen">
-      
-      {/* Форма с вертикальным расположением элементов и отступами */}
+
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-80">
         
         <h2 className="text-2xl text-center font-bold">Login</h2>
@@ -56,7 +55,7 @@ export default function LoginPage() {
           required
         />
         
-        {/* Простой пример кнопки с Tailwind */}
+
         <button
           className="bg-blue-600 text-white p-2 rounded disabled:bg-gray-500"
           type="submit"
@@ -65,10 +64,10 @@ export default function LoginPage() {
           {loading ? 'Logging in...' : 'Login'}
         </button>
         
-        {/* Сообщение об ошибке */}
+
         {error && <p className="text-red-500 text-center">{error}</p>}
         
-        {/* Ссылка на регистрацию */}
+
         <div className="text-center">
           <Link to="/registration" className="text-blue-400 hover:underline">
             Register

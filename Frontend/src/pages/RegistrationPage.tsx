@@ -23,7 +23,6 @@ export default function RegistrationPage() {
             console.log('Registration successful');
             console.log('Server response:', responseData);
 
-            // После успешной регистрации перенаправляем на страницу входа
             window.location.href = '/login';
 
         } catch (error) {

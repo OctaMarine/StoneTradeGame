@@ -226,7 +226,7 @@ export interface UserSkillNode {
   skillId: number;
   skillName: string;
   description?: string;
-  iconFileName?: string; // Имя файла с бэкенда
+  iconFileName?: string;
   parentSkillId: number | null;
   currentLevel: number;
   maxLevel: number;
